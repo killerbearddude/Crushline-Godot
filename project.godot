@@ -1,0 +1,16 @@
+; Engine configuration file.
+; Prefer editing this file through the Godot editor when possible.
+;
+; Format details are documented in Godot's project settings system.
+
+config_version=5
+
+[application]
+
+config/name="Crushline"
+run/main_scene="res://scenes/main/Main.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
