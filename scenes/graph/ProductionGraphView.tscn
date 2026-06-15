@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/graph_view_controller.gd" id="graph_view_controller"]
 
 [node name="ProductionGraphView" type="GraphEdit"]
 layout_mode = 2
@@ -7,3 +9,4 @@ size_flags_vertical = 3
 show_grid = true
 snapping_enabled = true
 connection_lines_thickness = 2.0
+script = ExtResource("graph_view_controller")
