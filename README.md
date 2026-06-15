@@ -33,6 +33,12 @@ Early implementation should stay Godot-native and small:
 
 Crushline owns game meaning. Godot owns engine, editor, UI, rendering, input, and platform infrastructure.
 
+## Open the project
+
+Open this repository folder in Godot 4.x.
+
+The project currently boots into `scenes/main/Main.tscn`, which contains the first UI scaffold and an empty `GraphEdit` production canvas placeholder.
+
 ## Early non-goals
 
 Do not start by building a custom graph renderer, custom canvas input system, custom node layout engine, custom port routing system, docking UI, save/load framework, platform layer, custom engine, multiplayer, full mod support, or hundreds of recipes.

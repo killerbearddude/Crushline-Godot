@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/graph/ProductionGraphView.tscn" id="1"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="TopLabel" type="Label" parent="Root/TopBar"]
+layout_mode = 2
+text = "Crushline — Slice 1 Scaffold"
+
+[node name="Body" type="HSplitContainer" parent="Root"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MachineLibraryPanel" type="PanelContainer" parent="Root/Body"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+
+[node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel"]
+layout_mode = 2
+text = "Machine library\n\nNext: add Resource Source, Crusher, Washer, Smelter, Filter, Waste Sink, and Basic Generator."
+autowrap_mode = 3
+
+[node name="ProductionGraphView" parent="Root/Body" instance=ExtResource("1")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DiagnosticsPanel" type="PanelContainer" parent="Root"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="DiagnosticsLabel" type="Label" parent="Root/DiagnosticsPanel"]
+layout_mode = 2
+text = "Diagnostics placeholder: deficits, bottlenecks, zero-output links, power state, unmanaged byproducts, and objective progress."
+autowrap_mode = 3

@@ -1,0 +1,17 @@
+# Godot editor and import cache
+.godot/
+.import/
+
+# Godot local export presets may contain machine-specific paths or secrets
+export_presets.cfg
+
+# Build/export outputs
+build/
+dist/
+exports/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
