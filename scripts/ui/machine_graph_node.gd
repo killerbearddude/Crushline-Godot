@@ -32,12 +32,16 @@ func apply_placeholder_definition() -> void:
 	_set_label_text("HeaderRow/HeaderText/TitleLabel", machine_display_name)
 	_set_label_text("HeaderRow/HeaderText/SubtitleLabel", _machine_subtitle())
 	_set_label_text("HeaderRow/StatusLabel", "100%")
-	_set_label_text("OutputRowA/OutputChipA/OutputLabelA", output_resource)
 	_set_label_text("FooterRow/FooterLabel", _footer_label())
 	_set_label_text("FooterRow/RateLabel", _rate_label())
 
-	_configure_input_row("InputRowA", "InputRowA/InputChipA/InputLabelA", input_resources, 0)
-	_configure_input_row("InputRowB", "InputRowB/InputChipB/InputLabelB", input_resources, 1)
+	if _is_source_node():
+		_configure_source_output_row(output_resource)
+	else:
+		_configure_input_row("InputRowA", "InputRowA/InputChipA/InputLabelA", input_resources, 0)
+		_configure_input_row("InputRowB", "InputRowB/InputChipB/InputLabelB", input_resources, 1)
+		_configure_output_row(output_resource)
+
 	_configure_slots(input_resources, output_resource)
 
 
@@ -67,22 +71,47 @@ func apply_visual_style() -> void:
 	_set_rect_color("HeaderRow/MachineGlyph", _machine_accent())
 	_set_rect_color("FooterRow/StatusDot", STATUS_COLOR)
 
+	if _is_source_node():
+		var output_resource := _clean_port_label(output_port_label)
+		_apply_label_style("InputRowA/InputChipA/InputLabelA", _port_color(output_resource), 9)
+		_style_card("InputRowA/InputChipA", Color(0.045, 0.060, 0.080), _port_color(output_resource).darkened(0.25), 1, 5)
+
+
+func _configure_source_output_row(output_resource: String) -> void:
+	_set_row_visible("InputRowA", true)
+	_set_row_visible("InputRowB", false)
+	_set_row_visible("OutputRowA", false)
+	_set_label_text("InputRowA/InputCaptionA", "Makes")
+	_set_label_text("InputRowA/InputChipA/InputLabelA", output_resource)
+
+
+func _configure_output_row(output_resource: String) -> void:
+	_set_row_visible("OutputRowA", not output_resource.is_empty())
+	if not output_resource.is_empty():
+		_set_label_text("OutputRowA/OutputChipA/OutputLabelA", output_resource)
+
 
 func _configure_input_row(row_path: String, label_path: String, input_resources: Array[String], index: int) -> void:
-	var row := get_node_or_null(row_path) as Control
-	if row == null:
-		return
-
 	var has_resource := index < input_resources.size() and input_resources[index] != "none"
-	row.visible = has_resource
+	_set_row_visible(row_path, has_resource)
 	if has_resource:
 		_set_label_text(label_path, input_resources[index])
+
+
+func _set_row_visible(row_path: String, is_visible: bool) -> void:
+	var row := get_node_or_null(row_path) as Control
+	if row != null:
+		row.visible = is_visible
 
 
 func _configure_slots(input_resources: Array[String], output_resource: String) -> void:
 	set_slot(1, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT)
 	set_slot(2, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT)
 	set_slot(3, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT)
+
+	if _is_source_node():
+		set_slot(1, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT, true, PORT_TYPE_RESOURCE, _port_color(output_resource))
+		return
 
 	if input_resources.size() > 0 and input_resources[0] != "none":
 		set_slot(1, true, PORT_TYPE_RESOURCE, _port_color(input_resources[0]), false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT)
@@ -124,6 +153,10 @@ func _draw_card_background() -> void:
 	var inner_edge_color := Color(accent.r, accent.g, accent.b, 0.08)
 	draw_line(Vector2(12, 8), Vector2(rect.size.x - 12, 8), inner_edge_color, 1.0)
 	draw_line(Vector2(12, rect.size.y - 8), Vector2(rect.size.x - 12, rect.size.y - 8), Color(0, 0, 0, 0.18), 1.0)
+
+	if _is_source_node():
+		_draw_row_socket("InputRowA", _port_color(output_port_label), false)
+		return
 
 	_draw_row_socket("InputRowA", _port_color(_input_resource_at(0)), true)
 	_draw_row_socket("InputRowB", _port_color(_input_resource_at(1)), true)
@@ -197,7 +230,7 @@ func _footer_label() -> String:
 	if machine_display_name == "Washer":
 		return "needs ore + water"
 	if input_port_label.contains("none"):
-		return "no input"
+		return "source output"
 	return "route pending"
 
 
@@ -239,6 +272,10 @@ func _port_color(label_text: String) -> Color:
 	if label_text.contains("none"):
 		return MUTED_TEXT_COLOR
 	return DEFAULT_ACCENT
+
+
+func _is_source_node() -> bool:
+	return _clean_port_label(input_port_label) == "none"
 
 
 func _input_resources() -> Array[String]:
