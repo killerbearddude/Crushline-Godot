@@ -96,6 +96,7 @@ text = "Smelter"
 [node name="WorkArea" type="Control" parent="Root/Body"]
 layout_mode = 2
 size_flags_horizontal = 3
+clip_contents = false
 
 [node name="ProductionGraphView" parent="Root/Body/WorkArea" instance=ExtResource("1")]
 layout_mode = 1
@@ -106,16 +107,17 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DiagnosticsOverlay" type="PanelContainer" parent="Root/Body/WorkArea"]
-custom_minimum_size = Vector2(320, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -340.0
+offset_left = -316.0
 offset_top = 16.0
 offset_right = -16.0
-offset_bottom = 260.0
+offset_bottom = 220.0
 mouse_filter = 2
-self_modulate = Color(1, 1, 1, 0.72)
+z_index = 20
+self_modulate = Color(1, 1, 1, 0.78)
 
 [node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay"]
 layout_mode = 2
