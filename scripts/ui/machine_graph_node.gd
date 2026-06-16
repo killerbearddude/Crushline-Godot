@@ -38,7 +38,6 @@ func apply_placeholder_definition() -> void:
 
 func apply_visual_style() -> void:
 	custom_minimum_size = Vector2(280, 136)
-	var accent := _machine_accent()
 	add_theme_stylebox_override("panel", _transparent_style())
 	add_theme_stylebox_override("panel_selected", _transparent_style())
 	add_theme_stylebox_override("titlebar", _transparent_style())
@@ -58,7 +57,7 @@ func apply_visual_style() -> void:
 
 	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.045, 0.060, 0.080), _port_color(input_port_label).darkened(0.25), 1, 5, 0)
 	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.045, 0.060, 0.080), _port_color(output_port_label).darkened(0.25), 1, 5, 0)
-	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", accent)
+	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", _machine_accent())
 	_set_rect_color("Card/CardContents/FooterRow/StatusDot", STATUS_COLOR)
 
 
@@ -70,22 +69,21 @@ func _draw_card_background() -> void:
 	var rect := Rect2(card.position, card.size)
 	var accent := _machine_accent()
 
-	_draw_style(rect, Color(0, 0, 0, 0), Color(accent.r, accent.g, accent.b, 0.20), 0, 12, 18)
-	_draw_style(rect.grow(-3.0), CARD_BG, Color(0, 0, 0, 0), 0, 10, 0)
+	_draw_style(rect, CARD_BG, 0, 10)
 
 	var header_rect := Rect2(rect.position + Vector2(6, 6), Vector2(rect.size.x - 12, 34))
-	_draw_style(header_rect, Color(accent.r * 0.18, accent.g * 0.18, accent.b * 0.18, 0.92), Color(0, 0, 0, 0), 0, 8, 0)
+	_draw_style(header_rect, Color(accent.r * 0.16, accent.g * 0.16, accent.b * 0.16, 0.96), 0, 8)
 
 	var body_rect := Rect2(rect.position + Vector2(6, 42), Vector2(rect.size.x - 12, rect.size.y - 52))
-	_draw_style(body_rect, CARD_BODY_BG, Color(0, 0, 0, 0), 0, 8, 0)
+	_draw_style(body_rect, CARD_BODY_BG, 0, 8)
 
-	var top_edge := Rect2(rect.position + Vector2(8, 8), Vector2(rect.size.x - 16, 2))
-	draw_rect(top_edge, Color(accent.r, accent.g, accent.b, 0.18), true)
+	var inner_edge_color := Color(accent.r, accent.g, accent.b, 0.08)
+	draw_line(rect.position + Vector2(12, 8), rect.position + Vector2(rect.size.x - 12, 8), inner_edge_color, 1.0)
+	draw_line(rect.position + Vector2(12, rect.size.y - 8), rect.position + Vector2(rect.size.x - 12, rect.size.y - 8), Color(0, 0, 0, 0.18), 1.0)
 
 
-func _draw_style(rect: Rect2, bg_color: Color, shadow_color: Color, border_width: int, corner_radius: int, shadow_size: int) -> void:
-	var style := _make_style(bg_color, Color(0, 0, 0, 0), border_width, corner_radius, shadow_size)
-	style.shadow_color = shadow_color
+func _draw_style(rect: Rect2, bg_color: Color, border_width: int, corner_radius: int) -> void:
+	var style := _make_style(bg_color, Color(0, 0, 0, 0), border_width, corner_radius, 0)
 	draw_style_box(style, rect)
 
 
@@ -185,9 +183,6 @@ func _make_style(bg_color: Color, border_color: Color, border_width: int, corner
 	style.content_margin_right = 8
 	style.content_margin_top = 6
 	style.content_margin_bottom = 6
-	if shadow_size > 0:
-		style.shadow_size = shadow_size
-		style.shadow_offset = Vector2.ZERO
 	return style
 
 
