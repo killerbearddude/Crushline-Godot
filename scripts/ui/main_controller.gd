@@ -1,7 +1,7 @@
 extends Control
 
-@onready var graph_view := get_node("Root/Body/ProductionGraphView") as GraphEdit
-@onready var diagnostics_label := get_node("Root/DiagnosticsPanel/DiagnosticsLabel") as Label
+@onready var graph_view := get_node("Root/Body/WorkArea/ProductionGraphView") as GraphEdit
+@onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsPanel/DiagnosticsLabel") as Label
 
 func _ready() -> void:
 	_bind_button("Root/Body/MachineLibraryPanel/MachineLibraryContents/AddResourceSourceButton", "Resource Source", "In: none", "Out: Iron Ore")
