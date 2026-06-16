@@ -3,82 +3,88 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(380, 220)
-title = ""
+custom_minimum_size = Vector2(420, 250)
+title = "Machine"
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
 
-[node name="HeaderRow" type="HBoxContainer" parent="."]
+[node name="StatusStrip" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
-[node name="MachineGlyph" type="ColorRect" parent="HeaderRow"]
-custom_minimum_size = Vector2(42, 42)
-layout_mode = 2
-color = Color(0.18, 0.72, 0.82, 1)
-
-[node name="HeaderText" type="VBoxContainer" parent="HeaderRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="TitleLabel" type="Label" parent="HeaderRow/HeaderText"]
-layout_mode = 2
-text = "Machine"
-
-[node name="SubtitleLabel" type="Label" parent="HeaderRow/HeaderText"]
-layout_mode = 2
-text = "PROCESS NODE"
-
-[node name="StatusRow" type="HBoxContainer" parent="."]
-layout_mode = 2
-
-[node name="StatusDot" type="ColorRect" parent="StatusRow"]
-custom_minimum_size = Vector2(10, 10)
+[node name="StatusDot" type="ColorRect" parent="StatusStrip"]
+custom_minimum_size = Vector2(12, 12)
 layout_mode = 2
 color = Color(0.25, 0.95, 0.42, 1)
 
-[node name="StatusLabel" type="Label" parent="StatusRow"]
+[node name="StatusLabel" type="Label" parent="StatusStrip"]
 layout_mode = 2
-text = "100% nominal"
+size_flags_horizontal = 3
+text = "100% NOMINAL"
 
-[node name="InputRow" type="HBoxContainer" parent="."]
+[node name="RateLabel" type="Label" parent="StatusStrip"]
+layout_mode = 2
+text = "60/m"
+
+[node name="InputRow" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="InputCaption" type="Label" parent="InputRow"]
-custom_minimum_size = Vector2(68, 0)
+[node name="InputContents" type="HBoxContainer" parent="InputRow"]
+layout_mode = 2
+
+[node name="InputCaption" type="Label" parent="InputRow/InputContents"]
+custom_minimum_size = Vector2(82, 0)
 layout_mode = 2
 text = "INPUT"
 
-[node name="InputLabel" type="Label" parent="InputRow"]
+[node name="InputLabel" type="Label" parent="InputRow/InputContents"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "input"
 
-[node name="OutputRow" type="HBoxContainer" parent="."]
+[node name="OutputRow" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="OutputCaption" type="Label" parent="OutputRow"]
-custom_minimum_size = Vector2(68, 0)
+[node name="OutputContents" type="HBoxContainer" parent="OutputRow"]
+layout_mode = 2
+
+[node name="OutputCaption" type="Label" parent="OutputRow/OutputContents"]
+custom_minimum_size = Vector2(82, 0)
 layout_mode = 2
 text = "OUTPUT"
 
-[node name="OutputLabel" type="Label" parent="OutputRow"]
+[node name="OutputLabel" type="Label" parent="OutputRow/OutputContents"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "output"
 
 [node name="MeterRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 
-[node name="MeterFill" type="ColorRect" parent="MeterRow"]
-custom_minimum_size = Vector2(120, 8)
+[node name="MeterBlockA" type="ColorRect" parent="MeterRow"]
+custom_minimum_size = Vector2(52, 10)
+layout_mode = 2
+color = Color(0.25, 0.95, 0.42, 1)
+
+[node name="MeterBlockB" type="ColorRect" parent="MeterRow"]
+custom_minimum_size = Vector2(52, 10)
+layout_mode = 2
+color = Color(0.25, 0.95, 0.42, 1)
+
+[node name="MeterBlockC" type="ColorRect" parent="MeterRow"]
+custom_minimum_size = Vector2(52, 10)
 layout_mode = 2
 color = Color(0.25, 0.95, 0.42, 1)
 
 [node name="MeterLabel" type="Label" parent="MeterRow"]
 layout_mode = 2
-text = "flow ready"
+text = "STABLE FLOW"
 
 [node name="FooterRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 
 [node name="FooterLabel" type="Label" parent="FooterRow"]
