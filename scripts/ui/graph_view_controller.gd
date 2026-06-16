@@ -4,6 +4,7 @@ signal status_text_changed(text: String)
 
 const TEST_NODE_NAME := "TestResourceSourceNode"
 const MACHINE_GRAPH_NODE_SCENE_PATH := "res://scenes/graph/MachineGraphNode.tscn"
+const GRAPH_SAVE_PATH := "user://slice1_graph_save.json"
 const CanvasAdapter = preload("res://scripts/graph/canvas_adapter.gd")
 const GraphEvaluator = preload("res://scripts/simulation/graph_evaluator.gd")
 const Slice1MachineCatalog = preload("res://scripts/content/slice1_machine_catalog.gd")
@@ -59,6 +60,39 @@ func add_placeholder_machine_node(machine_display_name: String, input_port_label
 func describe_graph_status() -> String:
 	_refresh_graph_model()
 	return _describe_graph_status()
+
+
+func save_graph_to_default_path() -> void:
+	var file := FileAccess.open(GRAPH_SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		status_text_changed.emit("Save failed: could not open %s (error %s)." % [GRAPH_SAVE_PATH, FileAccess.get_open_error()])
+		return
+
+	file.store_string(JSON.stringify(_serialize_graph(), "\t"))
+	file.close()
+	_refresh_graph_model()
+	status_text_changed.emit("Graph saved to %s\n\n%s" % [GRAPH_SAVE_PATH, _describe_graph_status()])
+
+
+func load_graph_from_default_path() -> void:
+	if not FileAccess.file_exists(GRAPH_SAVE_PATH):
+		status_text_changed.emit("Load failed: no saved graph at %s." % GRAPH_SAVE_PATH)
+		return
+
+	var file := FileAccess.open(GRAPH_SAVE_PATH, FileAccess.READ)
+	if file == null:
+		status_text_changed.emit("Load failed: could not open %s (error %s)." % [GRAPH_SAVE_PATH, FileAccess.get_open_error()])
+		return
+
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		status_text_changed.emit("Load failed: saved graph is not valid JSON graph data.")
+		return
+
+	_rebuild_graph_from_save(parsed)
+	_refresh_graph_model()
+	status_text_changed.emit("Graph loaded from %s\n\n%s" % [GRAPH_SAVE_PATH, _describe_graph_status()])
 
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
@@ -126,7 +160,7 @@ func _create_test_resource_source_node() -> void:
 	_create_machine_node_from_definition(TEST_NODE_NAME, definition, Vector2(80.0, 80.0))
 
 
-func _create_machine_node(node_name: String, machine_display_name: String, input_port_label: String, output_port_label: String, position: Vector2) -> void:
+func _create_machine_node(node_name: String, machine_display_name: String, input_port_label: String, output_port_label: String, position: Vector2, machine_id := "") -> void:
 	var machine_graph_node_scene := load(MACHINE_GRAPH_NODE_SCENE_PATH) as PackedScene
 	var graph_node := machine_graph_node_scene.instantiate()
 	graph_node.name = node_name
@@ -134,6 +168,8 @@ func _create_machine_node(node_name: String, machine_display_name: String, input
 	graph_node.set("machine_display_name", machine_display_name)
 	graph_node.set("input_port_label", input_port_label)
 	graph_node.set("output_port_label", output_port_label)
+	if not machine_id.is_empty():
+		graph_node.set_meta("machine_id", machine_id)
 
 	add_child(graph_node)
 
@@ -144,13 +180,117 @@ func _create_machine_node_from_definition(node_name: String, definition: Diction
 		str(definition.get("display_name", node_name)),
 		Slice1MachineCatalog.input_port_label(definition),
 		Slice1MachineCatalog.output_port_label(definition),
-		position
+		position,
+		str(definition.get("id", ""))
 	)
 
 
 func _refresh_graph_model() -> void:
 	graph_model = CanvasAdapter.build_model(self)
 	graph_evaluation = GraphEvaluator.evaluate(graph_model)
+
+
+func _serialize_graph() -> Dictionary:
+	var nodes: Array[Dictionary] = []
+	for child in get_children():
+		var graph_node := child as GraphNode
+		if graph_node == null:
+			continue
+
+		nodes.append({
+			"name": String(graph_node.name),
+			"machine_id": _machine_id_for_graph_node(graph_node),
+			"display_name": str(graph_node.get("machine_display_name")),
+			"input_port_label": str(graph_node.get("input_port_label")),
+			"output_port_label": str(graph_node.get("output_port_label")),
+			"position": {
+				"x": graph_node.position_offset.x,
+				"y": graph_node.position_offset.y,
+			},
+		})
+
+	var connections: Array[Dictionary] = []
+	for connection in get_connection_list():
+		connections.append({
+			"from_node": String(connection["from_node"]),
+			"from_port": int(connection["from_port"]),
+			"to_node": String(connection["to_node"]),
+			"to_port": int(connection["to_port"]),
+		})
+
+	return {
+		"version": 1,
+		"nodes": nodes,
+		"connections": connections,
+	}
+
+
+func _rebuild_graph_from_save(save_data: Dictionary) -> void:
+	_clear_graph()
+	var loaded_count := 0
+	for node_data in save_data.get("nodes", []):
+		var graph_node_data := node_data as Dictionary
+		if graph_node_data == null:
+			continue
+
+		var machine_id := str(graph_node_data.get("machine_id", ""))
+		var definition := Slice1MachineCatalog.get_machine_definition(machine_id)
+		var node_name := str(graph_node_data.get("name", "LoadedNode%d" % loaded_count))
+		var position := _vector2_from_save(graph_node_data.get("position", {}))
+		if not definition.is_empty():
+			_create_machine_node_from_definition(node_name, definition, position)
+		else:
+			_create_machine_node(
+				node_name,
+				str(graph_node_data.get("display_name", node_name)),
+				str(graph_node_data.get("input_port_label", "In: input")),
+				str(graph_node_data.get("output_port_label", "Out: output")),
+				position,
+				machine_id
+			)
+		loaded_count += 1
+
+	for connection_data in save_data.get("connections", []):
+		var graph_connection_data := connection_data as Dictionary
+		if graph_connection_data == null:
+			continue
+
+		var from_node := StringName(str(graph_connection_data.get("from_node", "")))
+		var to_node := StringName(str(graph_connection_data.get("to_node", "")))
+		var from_port := int(graph_connection_data.get("from_port", 0))
+		var to_port := int(graph_connection_data.get("to_port", 0))
+		if has_node(NodePath(from_node)) and has_node(NodePath(to_node)) and not is_node_connected(from_node, from_port, to_node, to_port):
+			connect_node(from_node, from_port, to_node, to_port)
+
+	next_node_index = loaded_count
+
+
+func _clear_graph() -> void:
+	for connection in get_connection_list():
+		disconnect_node(connection["from_node"], int(connection["from_port"]), connection["to_node"], int(connection["to_port"]))
+
+	for child in get_children():
+		if child is GraphNode:
+			remove_child(child)
+			child.queue_free()
+
+
+func _vector2_from_save(position_data) -> Vector2:
+	if typeof(position_data) != TYPE_DICTIONARY:
+		return Vector2.ZERO
+	return Vector2(float(position_data.get("x", 0.0)), float(position_data.get("y", 0.0)))
+
+
+func _machine_id_for_graph_node(graph_node: GraphNode) -> String:
+	if graph_node.has_meta("machine_id"):
+		return str(graph_node.get_meta("machine_id"))
+
+	var display_name := str(graph_node.get("machine_display_name"))
+	for machine_id in Slice1MachineCatalog.machine_ids():
+		var definition := Slice1MachineCatalog.get_machine_definition(machine_id)
+		if str(definition.get("display_name", "")) == display_name:
+			return machine_id
+	return ""
 
 
 func _apply_canvas_style() -> void:
