@@ -5,10 +5,12 @@ signal status_text_changed(text: String)
 const TEST_NODE_NAME := "TestResourceSourceNode"
 const MACHINE_GRAPH_NODE_SCENE_PATH := "res://scenes/graph/MachineGraphNode.tscn"
 const CanvasAdapter = preload("res://scripts/graph/canvas_adapter.gd")
+const GraphEvaluator = preload("res://scripts/simulation/graph_evaluator.gd")
 const PORT_TYPE_RESOURCE := 0
 
 var next_node_index := 0
 var graph_model: RefCounted = null
+var graph_evaluation: RefCounted = null
 
 func _ready() -> void:
 	add_valid_connection_type(PORT_TYPE_RESOURCE, PORT_TYPE_RESOURCE)
@@ -110,6 +112,7 @@ func _create_machine_node(node_name: String, machine_display_name: String, input
 
 func _refresh_graph_model() -> void:
 	graph_model = CanvasAdapter.build_model(self)
+	graph_evaluation = GraphEvaluator.evaluate(graph_model)
 
 
 func _describe_connection(action: String, from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> String:
@@ -125,11 +128,12 @@ func _describe_connection(action: String, from_node: StringName, from_port: int,
 
 
 func _describe_graph_status() -> String:
-	return "Graph status:\nVisual nodes: %d\nVisual connections: %d\nGraph nodes: %d\nGraph links: %d\nSelect a node or create/remove a connection to inspect it." % [
+	return "Graph status:\nVisual nodes: %d\nVisual connections: %d\nGraph nodes: %d\nGraph links: %d\n\n%s" % [
 		_count_graph_nodes(),
 		get_connection_list().size(),
 		graph_model.node_count(),
 		graph_model.link_count(),
+		graph_evaluation.describe(),
 	]
 
 
