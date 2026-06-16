@@ -80,7 +80,7 @@ static func _evaluate_basic_rate_flow(model: RefCounted, output: RefCounted) -> 
 			output.add_fact("%s consumes %d/m %s and produces %d/m %s." % [node_record.display_name, consumed_rate, node_record.input_resource, produced_rate, node_record.output_resource])
 
 		if not node_record.is_source() and produced_rate == 0:
-			var reason := _zero_output_reason(model, node_record)
+			var reason := _zero_output_reason(model, node_record, outgoing_rates)
 			output.add_warning("Zero output: %s produces 0/m %s because %s." % [node_record.display_name, node_record.output_resource, reason])
 
 	for link_record in model.link_records:
@@ -127,9 +127,24 @@ static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_ra
 
 	var next_visiting: Array = visiting.duplicate()
 	next_visiting.append(node_id)
-	var input_available := 0
+	var input_available := _resolve_required_input_rate(model, node_record, outgoing_rates, consuming_rates, next_visiting, output)
+	var output_rate := mini(input_available, int(node_record.nominal_rate_per_minute))
+	outgoing_rates[node_id] = output_rate
+	consuming_rates[node_id] = output_rate
+	return output_rate
+
+
+static func _resolve_required_input_rate(model: RefCounted, node_record: RefCounted, outgoing_rates: Dictionary, consuming_rates: Dictionary, visiting: Array, output: RefCounted) -> int:
+	var required_count := int(node_record.required_resource_count())
+	if required_count == 0:
+		return int(node_record.nominal_rate_per_minute)
+
+	var rates_by_resource: Dictionary = {}
+	for resource in node_record.input_resources:
+		rates_by_resource[str(resource)] = 0
+
 	for link_record in model.link_records:
-		if link_record.to_node_id != node_id:
+		if link_record.to_node_id != node_record.id:
 			continue
 
 		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
@@ -138,17 +153,27 @@ static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_ra
 		if not node_record.accepts_resource(from_record.output_resource):
 			continue
 
-		input_available += _resolve_output_rate(model, link_record.from_node_id, outgoing_rates, consuming_rates, next_visiting, output)
+		var upstream_rate := _resolve_output_rate(model, link_record.from_node_id, outgoing_rates, consuming_rates, visiting, output)
+		var previous_rate := int(rates_by_resource.get(from_record.output_resource, 0))
+		rates_by_resource[from_record.output_resource] = previous_rate + upstream_rate
 
-	var output_rate := mini(input_available, int(node_record.nominal_rate_per_minute))
-	outgoing_rates[node_id] = output_rate
-	consuming_rates[node_id] = output_rate
-	return output_rate
+	var limiting_rate := 0
+	var first_resource := true
+	for resource in node_record.input_resources:
+		var resource_rate := int(rates_by_resource.get(str(resource), 0))
+		if first_resource:
+			limiting_rate = resource_rate
+			first_resource = false
+		else:
+			limiting_rate = mini(limiting_rate, resource_rate)
+
+	return limiting_rate
 
 
-static func _zero_output_reason(model: RefCounted, node_record: RefCounted) -> String:
+static func _zero_output_reason(model: RefCounted, node_record: RefCounted, outgoing_rates: Dictionary) -> String:
 	var has_incoming := false
 	var has_wrong_resource := false
+	var supplied_resources: Dictionary = {}
 	for link_record in model.link_records:
 		if link_record.to_node_id != node_record.id:
 			continue
@@ -159,6 +184,14 @@ static func _zero_output_reason(model: RefCounted, node_record: RefCounted) -> S
 			continue
 		if not node_record.accepts_resource(from_record.output_resource):
 			has_wrong_resource = true
+			continue
+		if int(outgoing_rates.get(link_record.from_node_id, 0)) > 0:
+			supplied_resources[from_record.output_resource] = true
+
+	for resource in node_record.input_resources:
+		var resource_name := str(resource)
+		if resource_name != "none" and not supplied_resources.has(resource_name):
+			return "missing required input resource: %s" % resource_name
 
 	if has_wrong_resource:
 		return "incoming links provide the wrong resource"
