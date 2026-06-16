@@ -2,6 +2,9 @@
 .godot/
 .import/
 
+# Godot-generated script UID sidecars
+*.gd.uid
+
 # Godot local export presets may contain machine-specific paths or secrets
 export_presets.cfg
 
