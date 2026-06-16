@@ -3,10 +3,22 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(260, 140)
+custom_minimum_size = Vector2(320, 180)
 title = "Machine"
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
+
+[node name="StatusRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="StatusDot" type="ColorRect" parent="StatusRow"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+color = Color(0.25, 0.95, 0.42, 1)
+
+[node name="StatusLabel" type="Label" parent="StatusRow"]
+layout_mode = 2
+text = "100% nominal"
 
 [node name="InputRow" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -21,3 +33,10 @@ layout_mode = 2
 [node name="OutputLabel" type="Label" parent="OutputRow"]
 layout_mode = 2
 text = "Out: output"
+
+[node name="FooterRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FooterLabel" type="Label" parent="FooterRow"]
+layout_mode = 2
+text = "ready"
