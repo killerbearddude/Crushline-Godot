@@ -8,6 +8,7 @@ const TEXT_COLOR := Color(0.90, 0.96, 1.0)
 const MUTED_TEXT_COLOR := Color(0.56, 0.66, 0.76)
 const STATUS_COLOR := Color(0.25, 0.95, 0.42)
 const DEFAULT_ACCENT := Color(0.18, 0.72, 0.82)
+const SOCKET_OUTER := Color(0.018, 0.026, 0.036)
 
 @export var machine_display_name := "Machine"
 @export var input_port_label := "In: input"
@@ -80,6 +81,17 @@ func _draw_card_background() -> void:
 	var inner_edge_color := Color(accent.r, accent.g, accent.b, 0.08)
 	draw_line(rect.position + Vector2(12, 8), rect.position + Vector2(rect.size.x - 12, 8), inner_edge_color, 1.0)
 	draw_line(rect.position + Vector2(12, rect.size.y - 8), rect.position + Vector2(rect.size.x - 12, rect.size.y - 8), Color(0, 0, 0, 0.18), 1.0)
+
+	_draw_socket(rect.position + Vector2(1, rect.size.y * 0.50), _port_color(input_port_label), true)
+	_draw_socket(rect.position + Vector2(rect.size.x - 1, rect.size.y * 0.50), _port_color(output_port_label), false)
+
+
+func _draw_socket(center: Vector2, color: Color, is_input: bool) -> void:
+	draw_circle(center, 10.0, SOCKET_OUTER)
+	draw_circle(center, 7.0, Color(color.r, color.g, color.b, 0.34))
+	draw_circle(center, 3.5, color)
+	var notch_direction := -1.0 if is_input else 1.0
+	draw_line(center, center + Vector2(notch_direction * 12.0, 0.0), Color(color.r, color.g, color.b, 0.58), 2.0)
 
 
 func _draw_style(rect: Rect2, bg_color: Color, border_width: int, corner_radius: int) -> void:
