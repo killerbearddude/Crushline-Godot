@@ -116,7 +116,7 @@ func _draw_style(rect: Rect2, bg_color: Color, border_width: int, corner_radius:
 
 func _machine_subtitle() -> String:
 	match machine_display_name:
-		"Resource Source":
+		"Resource Source", "Coal Source", "Water Source":
 			return "SOURCE"
 		"Crusher":
 			return "MECHANICAL"
@@ -124,19 +124,39 @@ func _machine_subtitle() -> String:
 			return "FLUID"
 		"Smelter":
 			return "THERMAL"
+		"Basic Generator":
+			return "POWER"
 		_:
 			return "MACHINE"
 
 
 func _rate_label() -> String:
+	if output_port_label.contains("Power"):
+		return "120/m"
+	if output_port_label.contains("Coal"):
+		return "240/m"
+	if output_port_label.contains("Water"):
+		return "600/m"
 	if output_port_label.contains("Iron Ingot"):
+		return "180/m"
+	if output_port_label.contains("Washed Iron Ore"):
 		return "360/m"
+	if output_port_label.contains("Crushed Iron Ore"):
+		return "480/m"
 	if output_port_label.contains("Iron Ore"):
 		return "720/m"
 	return "ready"
 
 
 func _footer_label() -> String:
+	if machine_display_name == "Coal Source":
+		return "fuel feed"
+	if machine_display_name == "Water Source":
+		return "fluid feed"
+	if machine_display_name == "Basic Generator":
+		return "burns coal"
+	if machine_display_name == "Washer":
+		return "water soon / slurry"
 	if input_port_label.contains("none"):
 		return "no input"
 	return "route pending"
@@ -146,17 +166,29 @@ func _machine_accent() -> Color:
 	match machine_display_name:
 		"Resource Source":
 			return Color(0.30, 0.70, 0.44)
+		"Coal Source":
+			return Color(0.34, 0.32, 0.30)
+		"Water Source":
+			return Color(0.20, 0.54, 0.95)
 		"Crusher":
 			return Color(0.55, 0.64, 0.70)
 		"Washer":
 			return Color(0.25, 0.58, 0.92)
 		"Smelter":
 			return Color(0.95, 0.45, 0.18)
+		"Basic Generator":
+			return Color(0.95, 0.78, 0.22)
 		_:
 			return DEFAULT_ACCENT
 
 
 func _port_color(label_text: String) -> Color:
+	if label_text.contains("Power"):
+		return Color(0.95, 0.86, 0.28)
+	if label_text.contains("Coal"):
+		return Color(0.48, 0.44, 0.40)
+	if label_text.contains("Water"):
+		return Color(0.25, 0.58, 0.92)
 	if label_text.contains("Iron Ingot"):
 		return Color(0.95, 0.64, 0.23)
 	if label_text.contains("Washed Iron Ore"):
