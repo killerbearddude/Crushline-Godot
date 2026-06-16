@@ -3,21 +3,89 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(260, 140)
-title = "Machine"
+custom_minimum_size = Vector2(280, 136)
+title = ""
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
 
-[node name="InputRow" type="HBoxContainer" parent="."]
+[node name="Card" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(260, 118)
 layout_mode = 2
 
-[node name="InputLabel" type="Label" parent="InputRow"]
-layout_mode = 2
-text = "In: input"
-
-[node name="OutputRow" type="HBoxContainer" parent="."]
+[node name="CardContents" type="VBoxContainer" parent="Card"]
 layout_mode = 2
 
-[node name="OutputLabel" type="Label" parent="OutputRow"]
+[node name="HeaderRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-text = "Out: output"
+
+[node name="MachineGlyph" type="ColorRect" parent="Card/CardContents/HeaderRow"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+color = Color(0.18, 0.72, 0.82, 1)
+
+[node name="HeaderText" type="VBoxContainer" parent="Card/CardContents/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
+layout_mode = 2
+text = "Machine"
+
+[node name="SubtitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
+layout_mode = 2
+text = "PROCESS NODE"
+
+[node name="StatusLabel" type="Label" parent="Card/CardContents/HeaderRow"]
+layout_mode = 2
+text = "100%"
+
+[node name="NeedsRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="NeedsCaption" type="Label" parent="Card/CardContents/NeedsRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Needs"
+
+[node name="NeedsChip" type="PanelContainer" parent="Card/CardContents/NeedsRow"]
+layout_mode = 2
+
+[node name="NeedsLabel" type="Label" parent="Card/CardContents/NeedsRow/NeedsChip"]
+layout_mode = 2
+text = "input"
+
+[node name="MakesRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="MakesCaption" type="Label" parent="Card/CardContents/MakesRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Makes"
+
+[node name="MakesChip" type="PanelContainer" parent="Card/CardContents/MakesRow"]
+layout_mode = 2
+
+[node name="MakesLabel" type="Label" parent="Card/CardContents/MakesRow/MakesChip"]
+layout_mode = 2
+text = "output"
+
+[node name="FooterRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+
+[node name="StatusDot" type="ColorRect" parent="Card/CardContents/FooterRow"]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+color = Color(0.25, 0.95, 0.42, 1)
+
+[node name="FooterLabel" type="Label" parent="Card/CardContents/FooterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "online"
+
+[node name="RateLabel" type="Label" parent="Card/CardContents/FooterRow"]
+layout_mode = 2
+text = "60/m"

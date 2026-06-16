@@ -7,12 +7,19 @@ const MACHINE_GRAPH_NODE_SCENE_PATH := "res://scenes/graph/MachineGraphNode.tscn
 const CanvasAdapter = preload("res://scripts/graph/canvas_adapter.gd")
 const GraphEvaluator = preload("res://scripts/simulation/graph_evaluator.gd")
 const PORT_TYPE_RESOURCE := 0
+const CANVAS_BG := Color(0.045, 0.050, 0.062)
+const CANVAS_BORDER := Color(0.14, 0.18, 0.22)
+const GRID_MAJOR := Color(0.22, 0.28, 0.33)
+const GRID_MINOR := Color(0.11, 0.135, 0.16)
+const LINK_COLOR := Color(0.70, 0.88, 0.92)
+const PORT_GRAB_DISTANCE := 32
 
 var next_node_index := 0
 var graph_model: RefCounted = null
 var graph_evaluation: RefCounted = null
 
 func _ready() -> void:
+	_apply_canvas_style()
 	add_valid_connection_type(PORT_TYPE_RESOURCE, PORT_TYPE_RESOURCE)
 	add_valid_left_disconnect_type(PORT_TYPE_RESOURCE)
 	add_valid_right_disconnect_type(PORT_TYPE_RESOURCE)
@@ -113,6 +120,26 @@ func _create_machine_node(node_name: String, machine_display_name: String, input
 func _refresh_graph_model() -> void:
 	graph_model = CanvasAdapter.build_model(self)
 	graph_evaluation = GraphEvaluator.evaluate(graph_model)
+
+
+func _apply_canvas_style() -> void:
+	connection_lines_thickness = 3.0
+	add_theme_stylebox_override("panel", _make_canvas_style())
+	add_theme_color_override("grid_major", GRID_MAJOR)
+	add_theme_color_override("grid_minor", GRID_MINOR)
+	add_theme_color_override("connection_hover_tint_color", LINK_COLOR)
+	add_theme_color_override("connection_valid_target_tint_color", LINK_COLOR)
+	add_theme_constant_override("port_grab_distance_horizontal", PORT_GRAB_DISTANCE)
+	add_theme_constant_override("port_grab_distance_vertical", PORT_GRAB_DISTANCE)
+
+
+func _make_canvas_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = CANVAS_BG
+	style.border_color = CANVAS_BORDER
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(8)
+	return style
 
 
 func _describe_connection(action: String, from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> String:
