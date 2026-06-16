@@ -1,8 +1,9 @@
 extends GraphNode
 
 const PORT_TYPE_RESOURCE := 0
-const CARD_BG := Color(0.045, 0.065, 0.085)
-const CARD_BG_SELECTED := Color(0.055, 0.085, 0.110)
+const CARD_BG := Color(0.035, 0.050, 0.068)
+const CARD_BODY_BG := Color(0.040, 0.060, 0.082)
+const CARD_ROW_BG := Color(0.050, 0.070, 0.092)
 const TEXT_COLOR := Color(0.90, 0.96, 1.0)
 const MUTED_TEXT_COLOR := Color(0.56, 0.66, 0.76)
 const STATUS_COLOR := Color(0.25, 0.95, 0.42)
@@ -15,6 +16,11 @@ const DEFAULT_ACCENT := Color(0.18, 0.72, 0.82)
 func _ready() -> void:
 	apply_placeholder_definition()
 	apply_visual_style()
+	queue_redraw()
+
+
+func _draw() -> void:
+	_draw_card_background()
 
 
 func apply_placeholder_definition() -> void:
@@ -39,7 +45,7 @@ func apply_visual_style() -> void:
 	add_theme_stylebox_override("titlebar_selected", _transparent_style())
 	add_theme_color_override("title_color", Color(0, 0, 0, 0))
 
-	_style_card("Card", CARD_BG, accent, 0, 10, 12)
+	_style_card("Card", Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 10, 0)
 	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/TitleLabel", TEXT_COLOR, 13)
 	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/SubtitleLabel", MUTED_TEXT_COLOR, 8)
 	_apply_label_style("Card/CardContents/HeaderRow/StatusLabel", STATUS_COLOR, 11)
@@ -50,10 +56,37 @@ func apply_visual_style() -> void:
 	_apply_label_style("Card/CardContents/FooterRow/FooterLabel", MUTED_TEXT_COLOR, 8)
 	_apply_label_style("Card/CardContents/FooterRow/RateLabel", MUTED_TEXT_COLOR, 8)
 
-	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.055, 0.075, 0.095), _port_color(input_port_label).darkened(0.20), 1, 5, 0)
-	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.055, 0.075, 0.095), _port_color(output_port_label).darkened(0.20), 1, 5, 0)
+	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.045, 0.060, 0.080), _port_color(input_port_label).darkened(0.25), 1, 5, 0)
+	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.045, 0.060, 0.080), _port_color(output_port_label).darkened(0.25), 1, 5, 0)
 	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", accent)
 	_set_rect_color("Card/CardContents/FooterRow/StatusDot", STATUS_COLOR)
+
+
+func _draw_card_background() -> void:
+	var card := get_node_or_null("Card") as Control
+	if card == null:
+		return
+
+	var rect := Rect2(card.position, card.size)
+	var accent := _machine_accent()
+
+	_draw_style(rect, Color(0, 0, 0, 0), Color(accent.r, accent.g, accent.b, 0.20), 0, 12, 18)
+	_draw_style(rect.grow(-3.0), CARD_BG, Color(0, 0, 0, 0), 0, 10, 0)
+
+	var header_rect := Rect2(rect.position + Vector2(6, 6), Vector2(rect.size.x - 12, 34))
+	_draw_style(header_rect, Color(accent.r * 0.18, accent.g * 0.18, accent.b * 0.18, 0.92), Color(0, 0, 0, 0), 0, 8, 0)
+
+	var body_rect := Rect2(rect.position + Vector2(6, 42), Vector2(rect.size.x - 12, rect.size.y - 52))
+	_draw_style(body_rect, CARD_BODY_BG, Color(0, 0, 0, 0), 0, 8, 0)
+
+	var top_edge := Rect2(rect.position + Vector2(8, 8), Vector2(rect.size.x - 16, 2))
+	draw_rect(top_edge, Color(accent.r, accent.g, accent.b, 0.18), true)
+
+
+func _draw_style(rect: Rect2, bg_color: Color, shadow_color: Color, border_width: int, corner_radius: int, shadow_size: int) -> void:
+	var style := _make_style(bg_color, Color(0, 0, 0, 0), border_width, corner_radius, shadow_size)
+	style.shadow_color = shadow_color
+	draw_style_box(style, rect)
 
 
 func _machine_subtitle() -> String:
@@ -153,7 +186,6 @@ func _make_style(bg_color: Color, border_color: Color, border_width: int, corner
 	style.content_margin_top = 6
 	style.content_margin_bottom = 6
 	if shadow_size > 0:
-		style.shadow_color = Color(border_color.r, border_color.g, border_color.b, 0.42)
 		style.shadow_size = shadow_size
 		style.shadow_offset = Vector2.ZERO
 	return style
