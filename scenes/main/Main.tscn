@@ -74,7 +74,7 @@ layout_mode = 2
 
 [node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
-text = "Machine library\n\nAdd Slice 1 placeholder machines to the canvas."
+text = "Machine library\n\nSlice 1 machine buttons are backed by authored catalog data."
 autowrap_mode = 3
 
 [node name="AddResourceSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
