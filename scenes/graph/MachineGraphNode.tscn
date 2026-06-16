@@ -3,90 +3,89 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(420, 250)
-title = "Machine"
+custom_minimum_size = Vector2(280, 136)
+title = ""
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
 
-[node name="StatusStrip" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 30)
+[node name="Card" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(260, 118)
 layout_mode = 2
 
-[node name="StatusDot" type="ColorRect" parent="StatusStrip"]
-custom_minimum_size = Vector2(12, 12)
+[node name="CardContents" type="VBoxContainer" parent="Card"]
 layout_mode = 2
-color = Color(0.25, 0.95, 0.42, 1)
 
-[node name="StatusLabel" type="Label" parent="StatusStrip"]
+[node name="HeaderRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="MachineGlyph" type="ColorRect" parent="Card/CardContents/HeaderRow"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+color = Color(0.18, 0.72, 0.82, 1)
+
+[node name="HeaderText" type="VBoxContainer" parent="Card/CardContents/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "100% NOMINAL"
 
-[node name="RateLabel" type="Label" parent="StatusStrip"]
+[node name="TitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
 layout_mode = 2
-text = "60/m"
+text = "Machine"
 
-[node name="InputRow" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 46)
+[node name="SubtitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
+layout_mode = 2
+text = "PROCESS NODE"
+
+[node name="StatusLabel" type="Label" parent="Card/CardContents/HeaderRow"]
+layout_mode = 2
+text = "100%"
+
+[node name="NeedsRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="InputContents" type="HBoxContainer" parent="InputRow"]
+[node name="NeedsCaption" type="Label" parent="Card/CardContents/NeedsRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Needs"
+
+[node name="NeedsChip" type="PanelContainer" parent="Card/CardContents/NeedsRow"]
 layout_mode = 2
 
-[node name="InputCaption" type="Label" parent="InputRow/InputContents"]
-custom_minimum_size = Vector2(82, 0)
+[node name="NeedsLabel" type="Label" parent="Card/CardContents/NeedsRow/NeedsChip"]
 layout_mode = 2
-text = "INPUT"
-
-[node name="InputLabel" type="Label" parent="InputRow/InputContents"]
-layout_mode = 2
-size_flags_horizontal = 3
 text = "input"
 
-[node name="OutputRow" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 46)
+[node name="MakesRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="OutputContents" type="HBoxContainer" parent="OutputRow"]
+[node name="MakesCaption" type="Label" parent="Card/CardContents/MakesRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Makes"
+
+[node name="MakesChip" type="PanelContainer" parent="Card/CardContents/MakesRow"]
 layout_mode = 2
 
-[node name="OutputCaption" type="Label" parent="OutputRow/OutputContents"]
-custom_minimum_size = Vector2(82, 0)
+[node name="MakesLabel" type="Label" parent="Card/CardContents/MakesRow/MakesChip"]
 layout_mode = 2
-text = "OUTPUT"
-
-[node name="OutputLabel" type="Label" parent="OutputRow/OutputContents"]
-layout_mode = 2
-size_flags_horizontal = 3
 text = "output"
 
-[node name="MeterRow" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 26)
+[node name="FooterRow" type="HBoxContainer" parent="Card/CardContents"]
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 
-[node name="MeterBlockA" type="ColorRect" parent="MeterRow"]
-custom_minimum_size = Vector2(52, 10)
+[node name="StatusDot" type="ColorRect" parent="Card/CardContents/FooterRow"]
+custom_minimum_size = Vector2(8, 8)
 layout_mode = 2
 color = Color(0.25, 0.95, 0.42, 1)
 
-[node name="MeterBlockB" type="ColorRect" parent="MeterRow"]
-custom_minimum_size = Vector2(52, 10)
+[node name="FooterLabel" type="Label" parent="Card/CardContents/FooterRow"]
 layout_mode = 2
-color = Color(0.25, 0.95, 0.42, 1)
+size_flags_horizontal = 3
+text = "online"
 
-[node name="MeterBlockC" type="ColorRect" parent="MeterRow"]
-custom_minimum_size = Vector2(52, 10)
+[node name="RateLabel" type="Label" parent="Card/CardContents/FooterRow"]
 layout_mode = 2
-color = Color(0.25, 0.95, 0.42, 1)
-
-[node name="MeterLabel" type="Label" parent="MeterRow"]
-layout_mode = 2
-text = "STABLE FLOW"
-
-[node name="FooterRow" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 26)
-layout_mode = 2
-
-[node name="FooterLabel" type="Label" parent="FooterRow"]
-layout_mode = 2
-text = "no evaluator issues"
+text = "60/m"
