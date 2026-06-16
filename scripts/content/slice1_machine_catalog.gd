@@ -2,9 +2,12 @@ extends RefCounted
 
 const MACHINE_IDS: Array[String] = [
 	"resource_source",
+	"coal_source",
+	"water_source",
 	"crusher",
 	"washer",
 	"smelter",
+	"basic_generator",
 ]
 
 const DEFINITIONS := {
@@ -18,6 +21,28 @@ const DEFINITIONS := {
 		"nominal_rate_per_minute": 720,
 		"rate_label": "720/m",
 		"footer_label": "external feed / no input required",
+	},
+	"coal_source": {
+		"id": "coal_source",
+		"display_name": "Coal Source",
+		"subtitle": "SOURCE",
+		"button_path": "Root/Body/MachineLibraryPanel/MachineLibraryContents/AddCoalSourceButton",
+		"input_resource": "none",
+		"output_resource": "Coal",
+		"nominal_rate_per_minute": 240,
+		"rate_label": "240/m",
+		"footer_label": "fuel feed / no input required",
+	},
+	"water_source": {
+		"id": "water_source",
+		"display_name": "Water Source",
+		"subtitle": "SOURCE",
+		"button_path": "Root/Body/MachineLibraryPanel/MachineLibraryContents/AddWaterSourceButton",
+		"input_resource": "none",
+		"output_resource": "Water",
+		"nominal_rate_per_minute": 600,
+		"rate_label": "600/m",
+		"footer_label": "fluid feed / no input required",
 	},
 	"crusher": {
 		"id": "crusher",
@@ -40,7 +65,7 @@ const DEFINITIONS := {
 		"byproduct_resource": "Slurry",
 		"nominal_rate_per_minute": 360,
 		"rate_label": "360/m",
-		"footer_label": "byproduct: Slurry",
+		"footer_label": "water support coming soon / byproduct: Slurry",
 	},
 	"smelter": {
 		"id": "smelter",
@@ -52,6 +77,17 @@ const DEFINITIONS := {
 		"nominal_rate_per_minute": 180,
 		"rate_label": "180/m",
 		"footer_label": "power required soon",
+	},
+	"basic_generator": {
+		"id": "basic_generator",
+		"display_name": "Basic Generator",
+		"subtitle": "POWER",
+		"button_path": "Root/Body/MachineLibraryPanel/MachineLibraryContents/AddBasicGeneratorButton",
+		"input_resource": "Coal",
+		"output_resource": "Power",
+		"nominal_rate_per_minute": 120,
+		"rate_label": "120 power/m",
+		"footer_label": "burns coal / powers machines soon",
 	},
 }
 
