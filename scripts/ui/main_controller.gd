@@ -11,9 +11,12 @@ const DEBUG_DETAIL_COLOR := Color(0.72, 0.80, 0.86, 0.78)
 @onready var diagnostics_header := get_node("Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents/DiagnosticsHeader") as Label
 @onready var diagnostics_summary_label := get_node("Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents/DiagnosticsSummaryLabel") as Label
 @onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents/DiagnosticsScroll/DiagnosticsLabel") as Label
+@onready var save_graph_button := get_node("Root/Body/MachineLibraryPanel/MachineLibraryContents/SaveGraphButton") as Button
+@onready var load_graph_button := get_node("Root/Body/MachineLibraryPanel/MachineLibraryContents/LoadGraphButton") as Button
 
 func _ready() -> void:
 	_style_diagnostics_overlay()
+	_bind_graph_file_buttons()
 	_bind_machine_buttons()
 
 	if graph_view.has_signal("status_text_changed"):
@@ -21,6 +24,11 @@ func _ready() -> void:
 
 	if graph_view.has_method("describe_graph_status"):
 		_set_diagnostics_text(graph_view.call("describe_graph_status"))
+
+
+func _bind_graph_file_buttons() -> void:
+	save_graph_button.pressed.connect(_on_save_graph_pressed)
+	load_graph_button.pressed.connect(_on_load_graph_pressed)
 
 
 func _bind_machine_buttons() -> void:
@@ -44,6 +52,16 @@ func _bind_machine_button(machine_id: String, definition: Dictionary) -> void:
 func _on_add_machine_pressed(machine_id: String) -> void:
 	if graph_view.has_method("add_machine_node"):
 		graph_view.call("add_machine_node", machine_id)
+
+
+func _on_save_graph_pressed() -> void:
+	if graph_view.has_method("save_graph_to_default_path"):
+		graph_view.call("save_graph_to_default_path")
+
+
+func _on_load_graph_pressed() -> void:
+	if graph_view.has_method("load_graph_from_default_path"):
+		graph_view.call("load_graph_from_default_path")
 
 
 func _on_graph_status_text_changed(text: String) -> void:
