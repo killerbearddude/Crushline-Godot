@@ -77,6 +77,14 @@ layout_mode = 2
 text = "Machine library\n\nSlice 1 machines include iron, water, coal, and basic power."
 autowrap_mode = 3
 
+[node name="SaveGraphButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Save Graph"
+
+[node name="LoadGraphButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Load Graph"
+
 [node name="AddResourceSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
 text = "Resource Source"
