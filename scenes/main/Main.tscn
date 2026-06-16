@@ -107,20 +107,43 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DiagnosticsOverlay" type="PanelContainer" parent="Root/Body/WorkArea"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(290, 0)
 layout_mode = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -316.0
-offset_top = 16.0
+offset_left = -306.0
+offset_top = 12.0
 offset_right = -16.0
-offset_bottom = 220.0
+offset_bottom = 184.0
 mouse_filter = 2
 z_index = 20
-self_modulate = Color(1, 1, 1, 0.78)
+self_modulate = Color(1, 1, 1, 0.68)
 
-[node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay"]
+[node name="DiagnosticsContents" type="VBoxContainer" parent="Root/Body/WorkArea/DiagnosticsOverlay"]
 layout_mode = 2
 mouse_filter = 2
-text = "DEBUG\n\nWaiting for graph activity."
+
+[node name="DiagnosticsHeader" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents"]
+layout_mode = 2
+mouse_filter = 2
+text = "DEBUG FEED"
+
+[node name="DiagnosticsSummaryLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents"]
+layout_mode = 2
+mouse_filter = 2
+text = "Waiting for graph activity."
+autowrap_mode = 3
+
+[node name="DiagnosticsScroll" type="ScrollContainer" parent="Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents"]
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+horizontal_scroll_mode = 0
+
+[node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsContents/DiagnosticsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "Waiting for graph activity."
 autowrap_mode = 3
