@@ -74,12 +74,20 @@ layout_mode = 2
 
 [node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
-text = "Machine library\n\nSlice 1 machine buttons are backed by authored catalog data."
+text = "Machine library\n\nSlice 1 machines include iron, water, coal, and basic power."
 autowrap_mode = 3
 
 [node name="AddResourceSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
 text = "Resource Source"
+
+[node name="AddCoalSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Coal Source"
+
+[node name="AddWaterSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Water Source"
 
 [node name="AddCrusherButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
@@ -92,6 +100,10 @@ text = "Washer"
 [node name="AddSmelterButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
 text = "Smelter"
+
+[node name="AddBasicGeneratorButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Basic Generator"
 
 [node name="WorkArea" type="Control" parent="Root/Body"]
 layout_mode = 2

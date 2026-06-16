@@ -3,89 +3,88 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(280, 136)
+custom_minimum_size = Vector2(280, 154)
 title = ""
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
 
-[node name="Card" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(260, 118)
+[node name="HeaderRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 32)
 layout_mode = 2
 
-[node name="CardContents" type="VBoxContainer" parent="Card"]
-layout_mode = 2
-
-[node name="HeaderRow" type="HBoxContainer" parent="Card/CardContents"]
-custom_minimum_size = Vector2(0, 32)
-layout_mode = 2
-
-[node name="MachineGlyph" type="ColorRect" parent="Card/CardContents/HeaderRow"]
+[node name="MachineGlyph" type="ColorRect" parent="HeaderRow"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 color = Color(0.18, 0.72, 0.82, 1)
 
-[node name="HeaderText" type="VBoxContainer" parent="Card/CardContents/HeaderRow"]
+[node name="HeaderText" type="VBoxContainer" parent="HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
+[node name="TitleLabel" type="Label" parent="HeaderRow/HeaderText"]
 layout_mode = 2
 text = "Machine"
 
-[node name="SubtitleLabel" type="Label" parent="Card/CardContents/HeaderRow/HeaderText"]
+[node name="SubtitleLabel" type="Label" parent="HeaderRow/HeaderText"]
 layout_mode = 2
 text = "PROCESS NODE"
 
-[node name="StatusLabel" type="Label" parent="Card/CardContents/HeaderRow"]
+[node name="StatusLabel" type="Label" parent="HeaderRow"]
 layout_mode = 2
 text = "100%"
 
-[node name="NeedsRow" type="HBoxContainer" parent="Card/CardContents"]
-custom_minimum_size = Vector2(0, 24)
+[node name="InputRowA" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
 layout_mode = 2
 
-[node name="NeedsCaption" type="Label" parent="Card/CardContents/NeedsRow"]
+[node name="InputCaptionA" type="Label" parent="InputRowA"]
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 text = "Needs"
 
-[node name="NeedsChip" type="PanelContainer" parent="Card/CardContents/NeedsRow"]
+[node name="InputChipA" type="PanelContainer" parent="InputRowA"]
 layout_mode = 2
 
-[node name="NeedsLabel" type="Label" parent="Card/CardContents/NeedsRow/NeedsChip"]
+[node name="InputLabelA" type="Label" parent="InputRowA/InputChipA"]
 layout_mode = 2
 text = "input"
 
-[node name="MakesRow" type="HBoxContainer" parent="Card/CardContents"]
-custom_minimum_size = Vector2(0, 24)
+[node name="InputRowB" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
 layout_mode = 2
 
-[node name="MakesCaption" type="Label" parent="Card/CardContents/MakesRow"]
+[node name="InputChipB" type="PanelContainer" parent="InputRowB"]
+layout_mode = 2
+
+[node name="InputLabelB" type="Label" parent="InputRowB/InputChipB"]
+layout_mode = 2
+text = "input"
+
+[node name="OutputRowA" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+
+[node name="OutputCaptionA" type="Label" parent="OutputRowA"]
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 text = "Makes"
 
-[node name="MakesChip" type="PanelContainer" parent="Card/CardContents/MakesRow"]
+[node name="OutputChipA" type="PanelContainer" parent="OutputRowA"]
 layout_mode = 2
 
-[node name="MakesLabel" type="Label" parent="Card/CardContents/MakesRow/MakesChip"]
+[node name="OutputLabelA" type="Label" parent="OutputRowA/OutputChipA"]
 layout_mode = 2
 text = "output"
 
-[node name="FooterRow" type="HBoxContainer" parent="Card/CardContents"]
-custom_minimum_size = Vector2(0, 22)
+[node name="FooterRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 22)
 layout_mode = 2
 
-[node name="StatusDot" type="ColorRect" parent="Card/CardContents/FooterRow"]
-custom_minimum_size = Vector2(8, 8)
-layout_mode = 2
-color = Color(0.25, 0.95, 0.42, 1)
-
-[node name="FooterLabel" type="Label" parent="Card/CardContents/FooterRow"]
+[node name="FooterLabel" type="Label" parent="FooterRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "online"
 
-[node name="RateLabel" type="Label" parent="Card/CardContents/FooterRow"]
+[node name="RateLabel" type="Label" parent="FooterRow"]
 layout_mode = 2
 text = "60/m"
