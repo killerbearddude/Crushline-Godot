@@ -1,13 +1,10 @@
 extends GraphNode
 
 const PORT_TYPE_RESOURCE := 0
-const PANEL_COLOR := Color(0.030, 0.042, 0.058)
-const PANEL_SELECTED_COLOR := Color(0.045, 0.070, 0.095)
-const ROW_COLOR := Color(0.070, 0.090, 0.115)
-const ROW_BORDER := Color(0.16, 0.24, 0.30)
-const TEXT_COLOR := Color(0.92, 0.96, 1.0)
-const MUTED_TEXT_COLOR := Color(0.58, 0.66, 0.74)
-const CAPTION_COLOR := Color(0.42, 0.84, 0.96)
+const CARD_BG := Color(0.045, 0.065, 0.085)
+const CARD_BG_SELECTED := Color(0.055, 0.085, 0.110)
+const TEXT_COLOR := Color(0.90, 0.96, 1.0)
+const MUTED_TEXT_COLOR := Color(0.56, 0.66, 0.76)
 const STATUS_COLOR := Color(0.25, 0.95, 0.42)
 const DEFAULT_ACCENT := Color(0.18, 0.72, 0.82)
 
@@ -21,69 +18,70 @@ func _ready() -> void:
 
 
 func apply_placeholder_definition() -> void:
-	title = "  %s" % machine_display_name
-	_set_label_text("StatusStrip/StatusLabel", "100% NOMINAL")
-	_set_label_text("StatusStrip/RateLabel", _rate_label())
-	_set_label_text("InputRow/InputContents/InputLabel", _clean_port_label(input_port_label))
-	_set_label_text("OutputRow/OutputContents/OutputLabel", _clean_port_label(output_port_label))
-	_set_label_text("MeterRow/MeterLabel", _flow_label())
-	_set_label_text("FooterRow/FooterLabel", _footer_label())
+	title = ""
+	_set_label_text("Card/CardContents/HeaderRow/HeaderText/TitleLabel", machine_display_name)
+	_set_label_text("Card/CardContents/HeaderRow/HeaderText/SubtitleLabel", _machine_subtitle())
+	_set_label_text("Card/CardContents/HeaderRow/StatusLabel", "100%")
+	_set_label_text("Card/CardContents/NeedsRow/NeedsChip/NeedsLabel", _clean_port_label(input_port_label))
+	_set_label_text("Card/CardContents/MakesRow/MakesChip/MakesLabel", _clean_port_label(output_port_label))
+	_set_label_text("Card/CardContents/FooterRow/FooterLabel", _footer_label())
+	_set_label_text("Card/CardContents/FooterRow/RateLabel", _rate_label())
 
-	set_slot(1, true, PORT_TYPE_RESOURCE, _port_color(input_port_label), false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT)
-	set_slot(2, false, PORT_TYPE_RESOURCE, DEFAULT_ACCENT, true, PORT_TYPE_RESOURCE, _port_color(output_port_label))
+	set_slot(0, true, PORT_TYPE_RESOURCE, _port_color(input_port_label), true, PORT_TYPE_RESOURCE, _port_color(output_port_label))
 
 
 func apply_visual_style() -> void:
-	custom_minimum_size = Vector2(420, 250)
+	custom_minimum_size = Vector2(280, 136)
 	var accent := _machine_accent()
-	add_theme_stylebox_override("panel", _make_card_style(PANEL_COLOR, accent, 2, 14))
-	add_theme_stylebox_override("panel_selected", _make_card_style(PANEL_SELECTED_COLOR, Color(0.75, 0.95, 1.0), 4, 14))
-	add_theme_stylebox_override("titlebar", _make_title_style(accent))
-	add_theme_stylebox_override("titlebar_selected", _make_title_style(accent.lightened(0.12)))
-	add_theme_color_override("title_color", TEXT_COLOR)
-	add_theme_font_size_override("title_font_size", 18)
+	add_theme_stylebox_override("panel", _transparent_style())
+	add_theme_stylebox_override("panel_selected", _transparent_style())
+	add_theme_stylebox_override("titlebar", _transparent_style())
+	add_theme_stylebox_override("titlebar_selected", _transparent_style())
+	add_theme_color_override("title_color", Color(0, 0, 0, 0))
 
-	_style_row("InputRow")
-	_style_row("OutputRow")
-	_apply_label_style("StatusStrip/StatusLabel", STATUS_COLOR, 13)
-	_apply_label_style("StatusStrip/RateLabel", MUTED_TEXT_COLOR, 13)
-	_apply_label_style("InputRow/InputContents/InputCaption", CAPTION_COLOR, 12)
-	_apply_label_style("InputRow/InputContents/InputLabel", TEXT_COLOR, 16)
-	_apply_label_style("OutputRow/OutputContents/OutputCaption", CAPTION_COLOR, 12)
-	_apply_label_style("OutputRow/OutputContents/OutputLabel", TEXT_COLOR, 16)
-	_apply_label_style("MeterRow/MeterLabel", MUTED_TEXT_COLOR, 12)
-	_apply_label_style("FooterRow/FooterLabel", MUTED_TEXT_COLOR, 12)
+	_style_card("Card", CARD_BG, accent, 1, 10)
+	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/TitleLabel", TEXT_COLOR, 13)
+	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/SubtitleLabel", MUTED_TEXT_COLOR, 8)
+	_apply_label_style("Card/CardContents/HeaderRow/StatusLabel", STATUS_COLOR, 11)
+	_apply_label_style("Card/CardContents/NeedsRow/NeedsCaption", MUTED_TEXT_COLOR, 9)
+	_apply_label_style("Card/CardContents/MakesRow/MakesCaption", MUTED_TEXT_COLOR, 9)
+	_apply_label_style("Card/CardContents/NeedsRow/NeedsChip/NeedsLabel", _port_color(input_port_label), 9)
+	_apply_label_style("Card/CardContents/MakesRow/MakesChip/MakesLabel", _port_color(output_port_label), 9)
+	_apply_label_style("Card/CardContents/FooterRow/FooterLabel", MUTED_TEXT_COLOR, 8)
+	_apply_label_style("Card/CardContents/FooterRow/RateLabel", MUTED_TEXT_COLOR, 8)
 
-	_set_rect_color("StatusStrip/StatusDot", STATUS_COLOR)
-	_set_rect_color("MeterRow/MeterBlockA", STATUS_COLOR)
-	_set_rect_color("MeterRow/MeterBlockB", STATUS_COLOR)
-	_set_rect_color("MeterRow/MeterBlockC", STATUS_COLOR)
+	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.055, 0.075, 0.095), _port_color(input_port_label), 1, 5)
+	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.055, 0.075, 0.095), _port_color(output_port_label), 1, 5)
+	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", accent)
+	_set_rect_color("Card/CardContents/FooterRow/StatusDot", STATUS_COLOR)
 
 
-func _style_row(path: String) -> void:
-	var panel := get_node_or_null(path) as PanelContainer
-	if panel != null:
-		panel.add_theme_stylebox_override("panel", _make_card_style(ROW_COLOR, ROW_BORDER, 1, 8))
+func _machine_subtitle() -> String:
+	match machine_display_name:
+		"Resource Source":
+			return "SOURCE"
+		"Crusher":
+			return "MECHANICAL"
+		"Washer":
+			return "FLUID"
+		"Smelter":
+			return "THERMAL"
+		_:
+			return "MACHINE"
 
 
 func _rate_label() -> String:
-	if output_port_label.contains("Iron Ore"):
-		return "720/m"
 	if output_port_label.contains("Iron Ingot"):
 		return "360/m"
-	return "READY"
-
-
-func _flow_label() -> String:
-	if input_port_label.contains("none"):
-		return "SOURCE ONLINE"
-	return "ROUTE READY"
+	if output_port_label.contains("Iron Ore"):
+		return "720/m"
+	return "ready"
 
 
 func _footer_label() -> String:
 	if input_port_label.contains("none"):
-		return "external feed / no input required"
-	return "awaiting full production evaluator"
+		return "no input"
+	return "route pending"
 
 
 func _machine_accent() -> Color:
@@ -91,7 +89,7 @@ func _machine_accent() -> Color:
 		"Resource Source":
 			return Color(0.30, 0.70, 0.44)
 		"Crusher":
-			return Color(0.62, 0.66, 0.70)
+			return Color(0.55, 0.64, 0.70)
 		"Washer":
 			return Color(0.25, 0.58, 0.92)
 		"Smelter":
@@ -134,12 +132,17 @@ func _apply_label_style(path: String, color: Color, font_size: int) -> void:
 	var label := get_node_or_null(path) as Label
 	if label == null:
 		return
-
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_font_size_override("font_size", font_size)
 
 
-func _make_card_style(bg_color: Color, border_color: Color, border_width: int, corner_radius: int) -> StyleBoxFlat:
+func _style_card(path: String, bg_color: Color, border_color: Color, border_width: int, corner_radius: int) -> void:
+	var panel := get_node_or_null(path) as PanelContainer
+	if panel != null:
+		panel.add_theme_stylebox_override("panel", _make_style(bg_color, border_color, border_width, corner_radius))
+
+
+func _make_style(bg_color: Color, border_color: Color, border_width: int, corner_radius: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = bg_color
 	style.border_color = border_color
@@ -152,16 +155,13 @@ func _make_card_style(bg_color: Color, border_color: Color, border_width: int, c
 	return style
 
 
-func _make_title_style(accent: Color) -> StyleBoxFlat:
+func _transparent_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = accent.darkened(0.35)
-	style.border_color = accent
+	style.bg_color = Color(0, 0, 0, 0)
+	style.border_color = Color(0, 0, 0, 0)
 	style.set_border_width_all(0)
-	style.border_width_bottom = 2
-	style.set_corner_radius_all(14)
-	style.corner_radius_bottom_left = 0
-	style.corner_radius_bottom_right = 0
-	style.content_margin_left = 12
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
+	style.content_margin_left = 0
+	style.content_margin_right = 0
+	style.content_margin_top = 0
+	style.content_margin_bottom = 0
 	return style
