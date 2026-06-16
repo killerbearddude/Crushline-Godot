@@ -12,6 +12,7 @@ static func evaluate(model: RefCounted) -> RefCounted:
 		return output
 
 	_check_links(model, output)
+	_check_resource_compatibility(model, output)
 	_check_disconnected_nodes(model, output)
 	_check_basic_iron_chain(model, output)
 	return output
@@ -27,6 +28,38 @@ static func _check_links(model: RefCounted, output: RefCounted) -> void:
 
 		if not model.node_records.has(link_record.to_node_id):
 			output.add_hard_error("Link target is missing: %s" % link_record.describe())
+
+
+static func _check_resource_compatibility(model: RefCounted, output: RefCounted) -> void:
+	var checked_links := 0
+	var compatible_links := 0
+	for link_record in model.link_records:
+		var from_record = model.node_records.get(link_record.from_node_id)
+		var to_record = model.node_records.get(link_record.to_node_id)
+		if from_record == null or to_record == null:
+			continue
+
+		checked_links += 1
+		var produced_resource := str(from_record.output_resource)
+		var expected_resource := str(to_record.input_resource)
+		if produced_resource.is_empty() or expected_resource.is_empty():
+			continue
+
+		if to_record.accepts_resource(produced_resource):
+			compatible_links += 1
+			continue
+
+		output.add_warning(
+			"Resource mismatch: %s outputs %s, but %s expects %s. Link remains connected; target output is zero until the route is fixed." % [
+				from_record.display_name,
+				produced_resource,
+				to_record.display_name,
+				expected_resource,
+			]
+		)
+
+	if checked_links > 0:
+		output.add_fact("Compatible resource links: %d/%d" % [compatible_links, checked_links])
 
 
 static func _check_disconnected_nodes(model: RefCounted, output: RefCounted) -> void:
