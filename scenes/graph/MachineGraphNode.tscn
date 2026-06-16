@@ -3,7 +3,27 @@
 [ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
 
 [node name="MachineGraphNode" type="GraphNode"]
-custom_minimum_size = Vector2(280, 136)
+custom_minimum_size = Vector2(280, 154)
 title = ""
 position_offset = Vector2(80, 80)
 script = ExtResource("machine_graph_node")
+
+[node name="HeaderRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 32)
+layout_mode = 2
+
+[node name="InputRowA" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+
+[node name="InputRowB" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+
+[node name="OutputRowA" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+
+[node name="FooterRow" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(260, 22)
+layout_mode = 2
