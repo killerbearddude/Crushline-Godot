@@ -109,6 +109,29 @@ static func _evaluate_basic_rate_flow(model: RefCounted, output: RefCounted) -> 
 	if not bottleneck.is_empty():
 		output.add_fact("Bottleneck link: %s -> %s at %d/m %s." % [bottleneck["from"], bottleneck["to"], bottleneck["rate"], bottleneck["resource"]])
 
+	_add_basic_iron_objective(model, output, outgoing_rates)
+
+
+static func _add_basic_iron_objective(model: RefCounted, output: RefCounted, outgoing_rates: Dictionary) -> void:
+	var has_ingot_machine := false
+	var best_ingot_rate := 0
+	for node_id in model.node_records.keys():
+		var node_record: RefCounted = model.node_records[node_id]
+		if node_record.output_resource != "Iron Ingot":
+			continue
+
+		has_ingot_machine = true
+		best_ingot_rate = maxi(best_ingot_rate, int(outgoing_rates.get(node_id, 0)))
+
+	if best_ingot_rate > 0:
+		output.add_fact("Objective: Basic Iron Processing producing %d/m Iron Ingot." % best_ingot_rate)
+		return
+
+	if has_ingot_machine:
+		output.add_fact("Objective: Basic Iron Processing incomplete - Smelter is not producing Iron Ingot.")
+	else:
+		output.add_fact("Objective: Basic Iron Processing incomplete - add a Smelter output route.")
+
 
 static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_rates: Dictionary, consuming_rates: Dictionary, visiting: Array, output: RefCounted) -> int:
 	if outgoing_rates.has(node_id) and int(outgoing_rates[node_id]) > 0:
