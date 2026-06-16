@@ -93,19 +93,32 @@ text = "Washer"
 layout_mode = 2
 text = "Smelter"
 
-[node name="WorkArea" type="HSplitContainer" parent="Root/Body"]
+[node name="WorkArea" type="Control" parent="Root/Body"]
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ProductionGraphView" parent="Root/Body/WorkArea" instance=ExtResource("1")]
-layout_mode = 2
-size_flags_horizontal = 3
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="DiagnosticsPanel" type="PanelContainer" parent="Root/Body/WorkArea"]
-custom_minimum_size = Vector2(380, 0)
-layout_mode = 2
+[node name="DiagnosticsOverlay" type="PanelContainer" parent="Root/Body/WorkArea"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -340.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 260.0
+mouse_filter = 2
+self_modulate = Color(1, 1, 1, 0.72)
 
-[node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsPanel"]
+[node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsOverlay"]
 layout_mode = 2
-text = "OBJECTIVES\n\nBuild a valid iron scaffold.\n\nALERTS\n\nWaiting for graph activity."
+mouse_filter = 2
+text = "DEBUG\n\nWaiting for graph activity."
 autowrap_mode = 3
