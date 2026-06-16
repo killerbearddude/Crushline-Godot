@@ -17,6 +17,7 @@ const SOCKET_OUTER := Color(0.018, 0.026, 0.036)
 func _ready() -> void:
 	apply_placeholder_definition()
 	apply_visual_style()
+	_set_child_controls_mouse_passthrough()
 	queue_redraw()
 
 
@@ -60,6 +61,20 @@ func apply_visual_style() -> void:
 	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.045, 0.060, 0.080), _port_color(output_port_label).darkened(0.25), 1, 5, 0)
 	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", _machine_accent())
 	_set_rect_color("Card/CardContents/FooterRow/StatusDot", STATUS_COLOR)
+
+
+func _set_child_controls_mouse_passthrough() -> void:
+	for child in get_children():
+		_set_mouse_passthrough_recursive(child)
+
+
+func _set_mouse_passthrough_recursive(node: Node) -> void:
+	var control := node as Control
+	if control != null:
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	for child in node.get_children():
+		_set_mouse_passthrough_recursive(child)
 
 
 func _draw_card_background() -> void:
