@@ -69,8 +69,16 @@ func _diagnostics_summary(text: String) -> String:
 	var visual_connections := _find_line_value(text, "Visual connections:")
 	var hard_errors := _find_line_value(text, "Hard errors:")
 	var warnings := _find_line_value(text, "Warnings:")
-	if visual_nodes.is_empty() and hard_errors.is_empty():
+	var objective := _find_objective_status(text)
+	if visual_nodes.is_empty() and hard_errors.is_empty() and objective.is_empty():
 		return "Waiting for graph activity."
+
+	if not objective.is_empty():
+		return "%s  hard %s  warn %s" % [
+			objective,
+			hard_errors if not hard_errors.is_empty() else "0",
+			warnings if not warnings.is_empty() else "0",
+		]
 
 	return "nodes %s  links %s  hard %s  warn %s" % [
 		visual_nodes if not visual_nodes.is_empty() else "0",
@@ -82,6 +90,10 @@ func _diagnostics_summary(text: String) -> String:
 
 func _diagnostics_detail(text: String) -> String:
 	var selected_lines: Array[String] = []
+	var objective := _find_objective_status(text)
+	if not objective.is_empty():
+		selected_lines.append("Objective: %s" % objective)
+
 	for line in text.split("\n"):
 		var clean_line := line.strip_edges()
 		if clean_line.is_empty():
@@ -96,6 +108,8 @@ func _diagnostics_detail(text: String) -> String:
 			continue
 		if clean_line.begins_with("- Graph links"):
 			continue
+		if clean_line.begins_with("- Objective:") or clean_line.begins_with("Objective:"):
+			continue
 		selected_lines.append(clean_line)
 		if selected_lines.size() >= DETAIL_LINE_LIMIT:
 			break
@@ -108,4 +122,14 @@ func _find_line_value(text: String, prefix: String) -> String:
 		var clean_line := line.strip_edges()
 		if clean_line.begins_with(prefix):
 			return clean_line.trim_prefix(prefix).strip_edges()
+	return ""
+
+
+func _find_objective_status(text: String) -> String:
+	for line in text.split("\n"):
+		var clean_line := line.strip_edges()
+		if clean_line.begins_with("- Objective:"):
+			return clean_line.trim_prefix("- Objective:").strip_edges()
+		if clean_line.begins_with("Objective:"):
+			return clean_line.trim_prefix("Objective:").strip_edges()
 	return ""
