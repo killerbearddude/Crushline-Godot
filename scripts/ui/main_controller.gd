@@ -1,13 +1,12 @@
 extends Control
 
+const Slice1MachineCatalog = preload("res://scripts/content/slice1_machine_catalog.gd")
+
 @onready var graph_view := get_node("Root/Body/WorkArea/ProductionGraphView") as GraphEdit
-@onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsPanel/DiagnosticsLabel") as Label
+@onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsLabel") as Label
 
 func _ready() -> void:
-	_bind_button("Root/Body/MachineLibraryPanel/MachineLibraryContents/AddResourceSourceButton", "Resource Source", "In: none", "Out: Iron Ore")
-	_bind_button("Root/Body/MachineLibraryPanel/MachineLibraryContents/AddCrusherButton", "Crusher", "In: Iron Ore", "Out: Crushed Iron Ore")
-	_bind_button("Root/Body/MachineLibraryPanel/MachineLibraryContents/AddWasherButton", "Washer", "In: Crushed Iron Ore", "Out: Washed Iron Ore")
-	_bind_button("Root/Body/MachineLibraryPanel/MachineLibraryContents/AddSmelterButton", "Smelter", "In: Washed Iron Ore", "Out: Iron Ingot")
+	_bind_machine_buttons()
 
 	if graph_view.has_signal("status_text_changed"):
 		graph_view.connect("status_text_changed", _on_graph_status_text_changed)
@@ -16,14 +15,27 @@ func _ready() -> void:
 		diagnostics_label.text = graph_view.call("describe_graph_status")
 
 
-func _bind_button(button_path: String, machine_display_name: String, input_port_label: String, output_port_label: String) -> void:
-	var button := get_node(button_path) as Button
-	button.pressed.connect(_on_add_machine_pressed.bind(machine_display_name, input_port_label, output_port_label))
+func _bind_machine_buttons() -> void:
+	for machine_id in Slice1MachineCatalog.machine_ids():
+		var definition := Slice1MachineCatalog.get_machine_definition(machine_id)
+		_bind_machine_button(machine_id, definition)
 
 
-func _on_add_machine_pressed(machine_display_name: String, input_port_label: String, output_port_label: String) -> void:
-	if graph_view.has_method("add_placeholder_machine_node"):
-		graph_view.call("add_placeholder_machine_node", machine_display_name, input_port_label, output_port_label)
+func _bind_machine_button(machine_id: String, definition: Dictionary) -> void:
+	var button_path := str(definition.get("button_path", ""))
+	var button := get_node_or_null(button_path) as Button
+	if button == null:
+		push_warning("Missing machine library button for %s at %s" % [machine_id, button_path])
+		return
+
+	button.text = str(definition.get("display_name", machine_id))
+	button.tooltip_text = Slice1MachineCatalog.button_tooltip(definition)
+	button.pressed.connect(_on_add_machine_pressed.bind(machine_id))
+
+
+func _on_add_machine_pressed(machine_id: String) -> void:
+	if graph_view.has_method("add_machine_node"):
+		graph_view.call("add_machine_node", machine_id)
 
 
 func _on_graph_status_text_changed(text: String) -> void:

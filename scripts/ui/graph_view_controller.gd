@@ -6,6 +6,7 @@ const TEST_NODE_NAME := "TestResourceSourceNode"
 const MACHINE_GRAPH_NODE_SCENE_PATH := "res://scenes/graph/MachineGraphNode.tscn"
 const CanvasAdapter = preload("res://scripts/graph/canvas_adapter.gd")
 const GraphEvaluator = preload("res://scripts/simulation/graph_evaluator.gd")
+const Slice1MachineCatalog = preload("res://scripts/content/slice1_machine_catalog.gd")
 const PORT_TYPE_RESOURCE := 0
 const CANVAS_BG := Color(0.045, 0.050, 0.062)
 const CANVAS_BORDER := Color(0.14, 0.18, 0.22)
@@ -29,6 +30,21 @@ func _ready() -> void:
 	node_deselected.connect(_on_node_deselected)
 	_create_test_resource_source_node()
 	_refresh_graph_model()
+
+
+func add_machine_node(machine_id: String) -> void:
+	var definition := Slice1MachineCatalog.get_machine_definition(machine_id)
+	if definition.is_empty():
+		status_text_changed.emit("Unknown machine definition: %s" % machine_id)
+		return
+
+	next_node_index += 1
+	var display_name := str(definition.get("display_name", machine_id))
+	var node_name := "%sNode%d" % [display_name.replace(" ", ""), next_node_index]
+	var position := Vector2(360.0 + (next_node_index * 40.0), 120.0 + (next_node_index * 30.0))
+	_create_machine_node_from_definition(node_name, definition, position)
+	_refresh_graph_model()
+	status_text_changed.emit(_describe_graph_status())
 
 
 func add_placeholder_machine_node(machine_display_name: String, input_port_label: String, output_port_label: String) -> void:
@@ -102,7 +118,12 @@ func _create_test_resource_source_node() -> void:
 	if has_node(TEST_NODE_NAME):
 		return
 
-	_create_machine_node(TEST_NODE_NAME, "Resource Source", "In: none", "Out: Iron Ore", Vector2(80.0, 80.0))
+	var definition := Slice1MachineCatalog.get_machine_definition("resource_source")
+	if definition.is_empty():
+		_create_machine_node(TEST_NODE_NAME, "Resource Source", "In: none", "Out: Iron Ore", Vector2(80.0, 80.0))
+		return
+
+	_create_machine_node_from_definition(TEST_NODE_NAME, definition, Vector2(80.0, 80.0))
 
 
 func _create_machine_node(node_name: String, machine_display_name: String, input_port_label: String, output_port_label: String, position: Vector2) -> void:
@@ -115,6 +136,16 @@ func _create_machine_node(node_name: String, machine_display_name: String, input
 	graph_node.set("output_port_label", output_port_label)
 
 	add_child(graph_node)
+
+
+func _create_machine_node_from_definition(node_name: String, definition: Dictionary, position: Vector2) -> void:
+	_create_machine_node(
+		node_name,
+		str(definition.get("display_name", node_name)),
+		Slice1MachineCatalog.input_port_label(definition),
+		Slice1MachineCatalog.output_port_label(definition),
+		position
+	)
 
 
 func _refresh_graph_model() -> void:
