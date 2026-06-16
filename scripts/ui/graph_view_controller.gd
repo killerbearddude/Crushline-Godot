@@ -12,6 +12,7 @@ const CANVAS_BORDER := Color(0.14, 0.18, 0.22)
 const GRID_MAJOR := Color(0.22, 0.28, 0.33)
 const GRID_MINOR := Color(0.11, 0.135, 0.16)
 const LINK_COLOR := Color(0.70, 0.88, 0.92)
+const PORT_GRAB_DISTANCE := 32
 
 var next_node_index := 0
 var graph_model: RefCounted = null
@@ -128,6 +129,8 @@ func _apply_canvas_style() -> void:
 	add_theme_color_override("grid_minor", GRID_MINOR)
 	add_theme_color_override("connection_hover_tint_color", LINK_COLOR)
 	add_theme_color_override("connection_valid_target_tint_color", LINK_COLOR)
+	add_theme_constant_override("port_grab_distance_horizontal", PORT_GRAB_DISTANCE)
+	add_theme_constant_override("port_grab_distance_vertical", PORT_GRAB_DISTANCE)
 
 
 func _make_canvas_style() -> StyleBoxFlat:
