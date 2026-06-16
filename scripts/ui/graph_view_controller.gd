@@ -127,36 +127,25 @@ func _create_test_resource_source_node() -> void:
 
 
 func _create_machine_node(node_name: String, machine_display_name: String, input_port_label: String, output_port_label: String, position: Vector2) -> void:
-	var definition := {
-		"id": machine_display_name.to_snake_case(),
-		"display_name": machine_display_name,
-		"subtitle": "MACHINE",
-		"input_resource": input_port_label.replace("In: ", ""),
-		"output_resource": output_port_label.replace("Out: ", ""),
-		"rate_label": "ready",
-		"footer_label": "route pending",
-	}
-	_create_machine_node_from_definition(node_name, definition, position)
-
-
-func _create_machine_node_from_definition(node_name: String, definition: Dictionary, position: Vector2) -> void:
 	var machine_graph_node_scene := load(MACHINE_GRAPH_NODE_SCENE_PATH) as PackedScene
 	var graph_node := machine_graph_node_scene.instantiate()
 	graph_node.name = node_name
 	graph_node.position_offset = position
-	graph_node.set("machine_id", str(definition.get("id", "")))
-	graph_node.set("machine_display_name", str(definition.get("display_name", node_name)))
-	graph_node.set("machine_subtitle", str(definition.get("subtitle", "MACHINE")))
-	graph_node.set("input_port_label", Slice1MachineCatalog.input_port_label(definition))
-	graph_node.set("output_port_label", Slice1MachineCatalog.output_port_label(definition))
-	graph_node.set("input_resource", str(definition.get("input_resource", "input")))
-	graph_node.set("output_resource", str(definition.get("output_resource", "output")))
-	graph_node.set("byproduct_resource", str(definition.get("byproduct_resource", "")))
-	graph_node.set("nominal_rate_per_minute", int(definition.get("nominal_rate_per_minute", 0)))
-	graph_node.set("rate_label", str(definition.get("rate_label", "ready")))
-	graph_node.set("footer_label", str(definition.get("footer_label", "route pending")))
+	graph_node.set("machine_display_name", machine_display_name)
+	graph_node.set("input_port_label", input_port_label)
+	graph_node.set("output_port_label", output_port_label)
 
 	add_child(graph_node)
+
+
+func _create_machine_node_from_definition(node_name: String, definition: Dictionary, position: Vector2) -> void:
+	_create_machine_node(
+		node_name,
+		str(definition.get("display_name", node_name)),
+		Slice1MachineCatalog.input_port_label(definition),
+		Slice1MachineCatalog.output_port_label(definition),
+		position
+	)
 
 
 func _refresh_graph_model() -> void:
