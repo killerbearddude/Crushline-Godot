@@ -52,11 +52,17 @@ func _nominal_rate_for_output_resource(resource_name: String) -> int:
 	match resource_name:
 		"Iron Ore":
 			return 720
+		"Coal":
+			return 240
+		"Water":
+			return 600
 		"Crushed Iron Ore":
 			return 480
 		"Washed Iron Ore":
 			return 360
 		"Iron Ingot":
 			return 180
+		"Power":
+			return 120
 		_:
 			return 0
