@@ -21,11 +21,45 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TopBar" type="PanelContainer" parent="Root"]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="TopLabel" type="Label" parent="Root/TopBar"]
+[node name="TopNav" type="HBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
-text = "Crushline — Slice 1 Scaffold"
+
+[node name="LogoLabel" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "CRUSHLINE"
+
+[node name="OverviewTab" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+text = "OVERVIEW"
+
+[node name="GraphTab" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "GRAPH"
+
+[node name="StatsTab" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+text = "STATISTICS"
+
+[node name="Spacer" type="Control" parent="Root/TopBar/TopNav"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScenarioLabel" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+text = "Titan Ridge Complex"
+
+[node name="RunStateLabel" type="Label" parent="Root/TopBar/TopNav"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "● RUNNING"
 
 [node name="Body" type="HSplitContainer" parent="Root"]
 layout_mode = 2
@@ -68,10 +102,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="DiagnosticsPanel" type="PanelContainer" parent="Root/Body/WorkArea"]
-custom_minimum_size = Vector2(360, 0)
+custom_minimum_size = Vector2(380, 0)
 layout_mode = 2
 
 [node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsPanel"]
 layout_mode = 2
-text = "Diagnostics placeholder: deficits, bottlenecks, zero-output links, power state, unmanaged byproducts, and objective progress."
+text = "OBJECTIVES\n\nBuild a valid iron scaffold.\n\nALERTS\n\nWaiting for graph activity."
 autowrap_mode = 3
