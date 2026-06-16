@@ -28,6 +28,20 @@ func accepts_resource(resource_name: String) -> bool:
 	return is_source() or input_resources.has(resource_name)
 
 
+func accepts_resource_at_port(resource_name: String, port_index: int) -> bool:
+	return input_resource_for_port(port_index) == resource_name
+
+
+func input_resource_for_port(port_index: int) -> String:
+	if port_index >= 0 and port_index < input_resources.size():
+		return input_resources[port_index]
+	return ""
+
+
+func output_resource_for_port(_port_index: int) -> String:
+	return output_resource
+
+
 func requires_resource(resource_name: String) -> bool:
 	return input_resources.has(resource_name)
 
