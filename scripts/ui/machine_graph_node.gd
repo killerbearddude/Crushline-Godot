@@ -7,6 +7,7 @@ const PANEL_SELECTED_COLOR := Color(0.10, 0.13, 0.16)
 const BORDER_COLOR := Color(0.18, 0.72, 0.82)
 const TEXT_COLOR := Color(0.88, 0.92, 0.96)
 const MUTED_TEXT_COLOR := Color(0.64, 0.70, 0.76)
+const STATUS_COLOR := Color(0.25, 0.95, 0.42)
 
 @export var machine_display_name := "Machine"
 @export var input_port_label := "In: input"
@@ -28,8 +29,8 @@ func apply_placeholder_definition() -> void:
 	if output_label != null:
 		output_label.text = output_port_label
 
-	set_slot(0, true, PORT_TYPE_RESOURCE, PORT_COLOR, false, PORT_TYPE_RESOURCE, PORT_COLOR)
-	set_slot(1, false, PORT_TYPE_RESOURCE, PORT_COLOR, true, PORT_TYPE_RESOURCE, PORT_COLOR)
+	set_slot(1, true, PORT_TYPE_RESOURCE, PORT_COLOR, false, PORT_TYPE_RESOURCE, PORT_COLOR)
+	set_slot(2, false, PORT_TYPE_RESOURCE, PORT_COLOR, true, PORT_TYPE_RESOURCE, PORT_COLOR)
 
 
 func apply_visual_style() -> void:
@@ -37,15 +38,23 @@ func apply_visual_style() -> void:
 	add_theme_stylebox_override("panel_selected", _make_node_style(PANEL_SELECTED_COLOR, BORDER_COLOR, 3))
 	add_theme_color_override("title_color", TEXT_COLOR)
 
-	var input_label := get_node_or_null("InputRow/InputLabel") as Label
-	if input_label != null:
-		input_label.add_theme_color_override("font_color", MUTED_TEXT_COLOR)
-		input_label.add_theme_font_size_override("font_size", 14)
+	_apply_label_style("StatusRow/StatusLabel", STATUS_COLOR, 13)
+	_apply_label_style("InputRow/InputLabel", MUTED_TEXT_COLOR, 14)
+	_apply_label_style("OutputRow/OutputLabel", TEXT_COLOR, 14)
+	_apply_label_style("FooterRow/FooterLabel", MUTED_TEXT_COLOR, 12)
 
-	var output_label := get_node_or_null("OutputRow/OutputLabel") as Label
-	if output_label != null:
-		output_label.add_theme_color_override("font_color", TEXT_COLOR)
-		output_label.add_theme_font_size_override("font_size", 14)
+	var status_dot := get_node_or_null("StatusRow/StatusDot") as ColorRect
+	if status_dot != null:
+		status_dot.color = STATUS_COLOR
+
+
+func _apply_label_style(path: String, color: Color, font_size: int) -> void:
+	var label := get_node_or_null(path) as Label
+	if label == null:
+		return
+
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_font_size_override("font_size", font_size)
 
 
 func _make_node_style(bg_color: Color, border_color: Color, border_width: int) -> StyleBoxFlat:
