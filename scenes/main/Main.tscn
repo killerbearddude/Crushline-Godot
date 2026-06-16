@@ -59,15 +59,19 @@ text = "Washer"
 layout_mode = 2
 text = "Smelter"
 
-[node name="ProductionGraphView" parent="Root/Body" instance=ExtResource("1")]
+[node name="WorkArea" type="HSplitContainer" parent="Root/Body"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DiagnosticsPanel" type="PanelContainer" parent="Root"]
-custom_minimum_size = Vector2(0, 120)
+[node name="ProductionGraphView" parent="Root/Body/WorkArea" instance=ExtResource("1")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DiagnosticsPanel" type="PanelContainer" parent="Root/Body/WorkArea"]
+custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
 
-[node name="DiagnosticsLabel" type="Label" parent="Root/DiagnosticsPanel"]
+[node name="DiagnosticsLabel" type="Label" parent="Root/Body/WorkArea/DiagnosticsPanel"]
 layout_mode = 2
 text = "Diagnostics placeholder: deficits, bottlenecks, zero-output links, power state, unmanaged byproducts, and objective progress."
 autowrap_mode = 3
