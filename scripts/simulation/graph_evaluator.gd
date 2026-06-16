@@ -35,8 +35,8 @@ static func _check_resource_compatibility(model: RefCounted, output: RefCounted)
 	var checked_links := 0
 	var compatible_links := 0
 	for link_record in model.link_records:
-		var from_record = model.node_records.get(link_record.from_node_id)
-		var to_record = model.node_records.get(link_record.to_node_id)
+		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
+		var to_record: RefCounted = model.node_records.get(link_record.to_node_id)
 		if from_record == null or to_record == null:
 			continue
 
@@ -64,14 +64,14 @@ static func _check_resource_compatibility(model: RefCounted, output: RefCounted)
 
 
 static func _evaluate_basic_rate_flow(model: RefCounted, output: RefCounted) -> void:
-	var outgoing_rates := {}
-	var consuming_rates := {}
-	var bottleneck := {}
+	var outgoing_rates: Dictionary = {}
+	var consuming_rates: Dictionary = {}
+	var bottleneck: Dictionary = {}
 	for node_id in model.node_records.keys():
-		outgoing_rates[node_id] = _resolve_output_rate(model, node_id, outgoing_rates, consuming_rates, [], output)
+		outgoing_rates[node_id] = _resolve_output_rate(model, str(node_id), outgoing_rates, consuming_rates, [], output)
 
 	for node_id in model.node_records.keys():
-		var node_record = model.node_records[node_id]
+		var node_record: RefCounted = model.node_records[node_id]
 		var produced_rate := int(outgoing_rates.get(node_id, 0))
 		var consumed_rate := int(consuming_rates.get(node_id, 0))
 		if node_record.is_source():
@@ -84,14 +84,16 @@ static func _evaluate_basic_rate_flow(model: RefCounted, output: RefCounted) -> 
 			output.add_warning("Zero output: %s produces 0/m %s because %s." % [node_record.display_name, node_record.output_resource, reason])
 
 	for link_record in model.link_records:
-		var from_record = model.node_records.get(link_record.from_node_id)
-		var to_record = model.node_records.get(link_record.to_node_id)
+		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
+		var to_record: RefCounted = model.node_records.get(link_record.to_node_id)
 		if from_record == null or to_record == null:
 			continue
 		if not to_record.accepts_resource(from_record.output_resource):
 			continue
 
-		var link_rate := min(int(outgoing_rates.get(link_record.from_node_id, 0)), int(consuming_rates.get(link_record.to_node_id, 0)))
+		var source_rate := int(outgoing_rates.get(link_record.from_node_id, 0))
+		var target_consumption := int(consuming_rates.get(link_record.to_node_id, 0))
+		var link_rate := mini(source_rate, target_consumption)
 		output.add_fact("Flow %s -> %s: %d/m %s." % [from_record.display_name, to_record.display_name, link_rate, from_record.output_resource])
 		if link_rate > 0 and (bottleneck.is_empty() or link_rate < int(bottleneck.get("rate", 0))):
 			bottleneck = {
@@ -113,7 +115,7 @@ static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_ra
 		output.add_warning("Cycle detected at %s; Slice 1 rate flow treats cyclic output as 0/m." % node_id)
 		return 0
 
-	var node_record = model.node_records.get(node_id)
+	var node_record: RefCounted = model.node_records.get(node_id)
 	if node_record == null:
 		return 0
 
@@ -123,14 +125,14 @@ static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_ra
 		consuming_rates[node_id] = 0
 		return source_rate
 
-	var next_visiting := visiting.duplicate()
+	var next_visiting: Array = visiting.duplicate()
 	next_visiting.append(node_id)
 	var input_available := 0
 	for link_record in model.link_records:
 		if link_record.to_node_id != node_id:
 			continue
 
-		var from_record = model.node_records.get(link_record.from_node_id)
+		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
 		if from_record == null:
 			continue
 		if not node_record.accepts_resource(from_record.output_resource):
@@ -138,7 +140,7 @@ static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_ra
 
 		input_available += _resolve_output_rate(model, link_record.from_node_id, outgoing_rates, consuming_rates, next_visiting, output)
 
-	var output_rate = min(input_available, int(node_record.nominal_rate_per_minute))
+	var output_rate := mini(input_available, int(node_record.nominal_rate_per_minute))
 	outgoing_rates[node_id] = output_rate
 	consuming_rates[node_id] = output_rate
 	return output_rate
@@ -152,7 +154,7 @@ static func _zero_output_reason(model: RefCounted, node_record: RefCounted) -> S
 			continue
 
 		has_incoming = true
-		var from_record = model.node_records.get(link_record.from_node_id)
+		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
 		if from_record == null:
 			continue
 		if not node_record.accepts_resource(from_record.output_resource):
@@ -175,7 +177,7 @@ static func _check_disconnected_nodes(model: RefCounted, output: RefCounted) -> 
 		if linked_node_ids.has(node_id):
 			continue
 
-		var node_record = model.node_records[node_id]
+		var node_record: RefCounted = model.node_records[node_id]
 		output.add_warning("Disconnected node: %s (%s)" % [node_record.display_name, node_record.id])
 
 
@@ -213,8 +215,8 @@ static func _has_node_named(model: RefCounted, display_name: String) -> bool:
 
 static func _has_link_between_names(model: RefCounted, from_display_name: String, to_display_name: String) -> bool:
 	for link_record in model.link_records:
-		var from_record = model.node_records.get(link_record.from_node_id)
-		var to_record = model.node_records.get(link_record.to_node_id)
+		var from_record: RefCounted = model.node_records.get(link_record.from_node_id)
+		var to_record: RefCounted = model.node_records.get(link_record.to_node_id)
 		if from_record == null or to_record == null:
 			continue
 
