@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/graph/ProductionGraphView.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/ui/main_controller.gd" id="main_controller"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("main_controller")
 
 [node name="Root" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -33,10 +35,17 @@ size_flags_vertical = 3
 custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
 
-[node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel"]
+[node name="MachineLibraryContents" type="VBoxContainer" parent="Root/Body/MachineLibraryPanel"]
 layout_mode = 2
-text = "Machine library\n\nNext: add Resource Source, Crusher, Washer, Smelter, Filter, Waste Sink, and Basic Generator."
+
+[node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Machine library\n\nSlice 1 test action: add a node to the canvas."
 autowrap_mode = 3
+
+[node name="AddNodeButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Add Node"
 
 [node name="ProductionGraphView" parent="Root/Body" instance=ExtResource("1")]
 layout_mode = 2
