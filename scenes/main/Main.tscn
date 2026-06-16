@@ -40,12 +40,24 @@ layout_mode = 2
 
 [node name="MachineLibraryLabel" type="Label" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
-text = "Machine library\n\nSlice 1 test action: add a node to the canvas."
+text = "Machine library\n\nAdd Slice 1 placeholder machines to the canvas."
 autowrap_mode = 3
 
-[node name="AddNodeButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+[node name="AddResourceSourceButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
 layout_mode = 2
-text = "Add Node"
+text = "Resource Source"
+
+[node name="AddCrusherButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Crusher"
+
+[node name="AddWasherButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Washer"
+
+[node name="AddSmelterButton" type="Button" parent="Root/Body/MachineLibraryPanel/MachineLibraryContents"]
+layout_mode = 2
+text = "Smelter"
 
 [node name="ProductionGraphView" parent="Root/Body" instance=ExtResource("1")]
 layout_mode = 2
