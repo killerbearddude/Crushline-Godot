@@ -3,7 +3,7 @@ extends Control
 const Slice1MachineCatalog = preload("res://scripts/content/slice1_machine_catalog.gd")
 
 @onready var graph_view := get_node("Root/Body/WorkArea/ProductionGraphView") as GraphEdit
-@onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsPanel/DiagnosticsLabel") as Label
+@onready var diagnostics_label := get_node("Root/Body/WorkArea/DiagnosticsOverlay/DiagnosticsLabel") as Label
 
 func _ready() -> void:
 	_bind_machine_buttons()
