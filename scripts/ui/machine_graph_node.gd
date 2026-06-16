@@ -39,7 +39,7 @@ func apply_visual_style() -> void:
 	add_theme_stylebox_override("titlebar_selected", _transparent_style())
 	add_theme_color_override("title_color", Color(0, 0, 0, 0))
 
-	_style_card("Card", CARD_BG, accent, 1, 10)
+	_style_card("Card", CARD_BG, accent, 0, 10, 12)
 	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/TitleLabel", TEXT_COLOR, 13)
 	_apply_label_style("Card/CardContents/HeaderRow/HeaderText/SubtitleLabel", MUTED_TEXT_COLOR, 8)
 	_apply_label_style("Card/CardContents/HeaderRow/StatusLabel", STATUS_COLOR, 11)
@@ -50,8 +50,8 @@ func apply_visual_style() -> void:
 	_apply_label_style("Card/CardContents/FooterRow/FooterLabel", MUTED_TEXT_COLOR, 8)
 	_apply_label_style("Card/CardContents/FooterRow/RateLabel", MUTED_TEXT_COLOR, 8)
 
-	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.055, 0.075, 0.095), _port_color(input_port_label), 1, 5)
-	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.055, 0.075, 0.095), _port_color(output_port_label), 1, 5)
+	_style_card("Card/CardContents/NeedsRow/NeedsChip", Color(0.055, 0.075, 0.095), _port_color(input_port_label).darkened(0.20), 1, 5, 0)
+	_style_card("Card/CardContents/MakesRow/MakesChip", Color(0.055, 0.075, 0.095), _port_color(output_port_label).darkened(0.20), 1, 5, 0)
 	_set_rect_color("Card/CardContents/HeaderRow/MachineGlyph", accent)
 	_set_rect_color("Card/CardContents/FooterRow/StatusDot", STATUS_COLOR)
 
@@ -136,13 +136,13 @@ func _apply_label_style(path: String, color: Color, font_size: int) -> void:
 	label.add_theme_font_size_override("font_size", font_size)
 
 
-func _style_card(path: String, bg_color: Color, border_color: Color, border_width: int, corner_radius: int) -> void:
+func _style_card(path: String, bg_color: Color, border_color: Color, border_width: int, corner_radius: int, shadow_size: int) -> void:
 	var panel := get_node_or_null(path) as PanelContainer
 	if panel != null:
-		panel.add_theme_stylebox_override("panel", _make_style(bg_color, border_color, border_width, corner_radius))
+		panel.add_theme_stylebox_override("panel", _make_style(bg_color, border_color, border_width, corner_radius, shadow_size))
 
 
-func _make_style(bg_color: Color, border_color: Color, border_width: int, corner_radius: int) -> StyleBoxFlat:
+func _make_style(bg_color: Color, border_color: Color, border_width: int, corner_radius: int, shadow_size: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = bg_color
 	style.border_color = border_color
@@ -152,6 +152,10 @@ func _make_style(bg_color: Color, border_color: Color, border_width: int, corner
 	style.content_margin_right = 8
 	style.content_margin_top = 6
 	style.content_margin_bottom = 6
+	if shadow_size > 0:
+		style.shadow_color = Color(border_color.r, border_color.g, border_color.b, 0.42)
+		style.shadow_size = shadow_size
+		style.shadow_offset = Vector2.ZERO
 	return style
 
 
