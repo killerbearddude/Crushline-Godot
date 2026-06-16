@@ -13,6 +13,7 @@ static func evaluate(model: RefCounted) -> RefCounted:
 
 	_check_links(model, output)
 	_check_resource_compatibility(model, output)
+	_evaluate_basic_rate_flow(model, output)
 	_check_disconnected_nodes(model, output)
 	_check_basic_iron_chain(model, output)
 	return output
@@ -60,6 +61,108 @@ static func _check_resource_compatibility(model: RefCounted, output: RefCounted)
 
 	if checked_links > 0:
 		output.add_fact("Compatible resource links: %d/%d" % [compatible_links, checked_links])
+
+
+static func _evaluate_basic_rate_flow(model: RefCounted, output: RefCounted) -> void:
+	var outgoing_rates := {}
+	var consuming_rates := {}
+	var bottleneck := {}
+	for node_id in model.node_records.keys():
+		outgoing_rates[node_id] = _resolve_output_rate(model, node_id, outgoing_rates, consuming_rates, [], output)
+
+	for node_id in model.node_records.keys():
+		var node_record = model.node_records[node_id]
+		var produced_rate := int(outgoing_rates.get(node_id, 0))
+		var consumed_rate := int(consuming_rates.get(node_id, 0))
+		if node_record.is_source():
+			output.add_fact("%s produces %d/m %s." % [node_record.display_name, produced_rate, node_record.output_resource])
+		else:
+			output.add_fact("%s consumes %d/m %s and produces %d/m %s." % [node_record.display_name, consumed_rate, node_record.input_resource, produced_rate, node_record.output_resource])
+
+		if not node_record.is_source() and produced_rate == 0:
+			var reason := _zero_output_reason(model, node_record)
+			output.add_warning("Zero output: %s produces 0/m %s because %s." % [node_record.display_name, node_record.output_resource, reason])
+
+	for link_record in model.link_records:
+		var from_record = model.node_records.get(link_record.from_node_id)
+		var to_record = model.node_records.get(link_record.to_node_id)
+		if from_record == null or to_record == null:
+			continue
+		if not to_record.accepts_resource(from_record.output_resource):
+			continue
+
+		var link_rate := min(int(outgoing_rates.get(link_record.from_node_id, 0)), int(consuming_rates.get(link_record.to_node_id, 0)))
+		output.add_fact("Flow %s -> %s: %d/m %s." % [from_record.display_name, to_record.display_name, link_rate, from_record.output_resource])
+		if link_rate > 0 and (bottleneck.is_empty() or link_rate < int(bottleneck.get("rate", 0))):
+			bottleneck = {
+				"from": from_record.display_name,
+				"to": to_record.display_name,
+				"resource": from_record.output_resource,
+				"rate": link_rate,
+			}
+
+	if not bottleneck.is_empty():
+		output.add_fact("Bottleneck link: %s -> %s at %d/m %s." % [bottleneck["from"], bottleneck["to"], bottleneck["rate"], bottleneck["resource"]])
+
+
+static func _resolve_output_rate(model: RefCounted, node_id: String, outgoing_rates: Dictionary, consuming_rates: Dictionary, visiting: Array, output: RefCounted) -> int:
+	if outgoing_rates.has(node_id) and int(outgoing_rates[node_id]) > 0:
+		return int(outgoing_rates[node_id])
+
+	if visiting.has(node_id):
+		output.add_warning("Cycle detected at %s; Slice 1 rate flow treats cyclic output as 0/m." % node_id)
+		return 0
+
+	var node_record = model.node_records.get(node_id)
+	if node_record == null:
+		return 0
+
+	if node_record.is_source():
+		var source_rate := int(node_record.nominal_rate_per_minute)
+		outgoing_rates[node_id] = source_rate
+		consuming_rates[node_id] = 0
+		return source_rate
+
+	var next_visiting := visiting.duplicate()
+	next_visiting.append(node_id)
+	var input_available := 0
+	for link_record in model.link_records:
+		if link_record.to_node_id != node_id:
+			continue
+
+		var from_record = model.node_records.get(link_record.from_node_id)
+		if from_record == null:
+			continue
+		if not node_record.accepts_resource(from_record.output_resource):
+			continue
+
+		input_available += _resolve_output_rate(model, link_record.from_node_id, outgoing_rates, consuming_rates, next_visiting, output)
+
+	var output_rate = min(input_available, int(node_record.nominal_rate_per_minute))
+	outgoing_rates[node_id] = output_rate
+	consuming_rates[node_id] = output_rate
+	return output_rate
+
+
+static func _zero_output_reason(model: RefCounted, node_record: RefCounted) -> String:
+	var has_incoming := false
+	var has_wrong_resource := false
+	for link_record in model.link_records:
+		if link_record.to_node_id != node_record.id:
+			continue
+
+		has_incoming = true
+		var from_record = model.node_records.get(link_record.from_node_id)
+		if from_record == null:
+			continue
+		if not node_record.accepts_resource(from_record.output_resource):
+			has_wrong_resource = true
+
+	if has_wrong_resource:
+		return "incoming links provide the wrong resource"
+	if not has_incoming:
+		return "it has no input link"
+	return "upstream flow is 0/m"
 
 
 static func _check_disconnected_nodes(model: RefCounted, output: RefCounted) -> void:
