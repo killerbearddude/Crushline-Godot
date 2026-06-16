@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/machine_graph_node.gd" id="machine_graph_node"]
+
+[node name="MachineGraphNode" type="GraphNode"]
+custom_minimum_size = Vector2(260, 140)
+title = "Machine"
+position_offset = Vector2(80, 80)
+script = ExtResource("machine_graph_node")
+
+[node name="InputRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="InputLabel" type="Label" parent="InputRow"]
+layout_mode = 2
+text = "In: input"
+
+[node name="OutputRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="OutputLabel" type="Label" parent="OutputRow"]
+layout_mode = 2
+text = "Out: output"
